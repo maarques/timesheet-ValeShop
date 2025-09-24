@@ -1,0 +1,54 @@
+<app-topbar></app-topbar>
+
+<!-- Container Principal -->
+<app-container>
+  <div class="detalhes-demanda">
+    <h2>Exemplo demanda 1</h2>
+    <p><b>Atribuída para:</b> Nome</p>
+    <p><b>Status:</b> <span class="status">Iniciada</span></p>
+    <p><b>Prioridade:</b> <span class="prioridade baixa">Baixa</span></p>
+    <button class="btn-acao">Editar</button>
+  </div>
+</app-container>
+
+<!-- Container de Problemas -->
+<app-container>
+  <div class="secao">
+    <h3>Problemas</h3>
+    <button class="btn-acao" (click)="abrirProblema = !abrirProblema">Adicionar</button>
+  </div>
+
+  <!-- Formulário de adicionar problema -->
+  <div *ngIf="abrirProblema" class="box-add">
+    <input type="text" [(ngModel)]="novoProblema" placeholder="Descreva o problema">
+    <button (click)="adicionarProblema()">Salvar</button>
+    <button class="btn-cancelar" (click)="abrirProblema=false">Cancelar</button>
+  </div>
+
+  <!-- Lista de problemas -->
+  <div class="item" *ngFor="let problema of problemas">
+    <p>{{ problema.descricao }}</p>
+    <span class="data">Data: {{ problema.data }}</span>
+  </div>
+</app-container>
+
+<!-- Container de Observações -->
+<app-container>
+  <div class="secao">
+    <h3>Observações</h3>
+    <button class="btn-acao" (click)="abrirObs = !abrirObs">Adicionar</button>
+  </div>
+
+  <!-- Formulário de adicionar observação -->
+  <div *ngIf="abrirObs" class="box-add">
+    <input type="text" [(ngModel)]="novaObs" placeholder="Escreva a observação">
+    <button (click)="adicionarObs()">Salvar</button>
+    <button class="btn-cancelar" (click)="abrirObs=false">Cancelar</button>
+  </div>
+
+  <!-- Lista de observações -->
+  <div class="item" *ngFor="let obs of observacoes">
+    <p>{{ obs.descricao }}</p>
+    <span class="data">Data: {{ obs.data }}</span>
+  </div>
+</app-container>

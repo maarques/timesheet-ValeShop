@@ -1,0 +1,57 @@
+<app-topbar></app-topbar>
+
+<app-container>
+  <div class="cadastroDemanda-form">
+    <h2><b>Cadastro de Demanda</b></h2>
+    <p class="descricao">Preencha os campos abaixo para registrar uma nova solicitação de TI</p>
+
+    <form>
+      <!-- Linha 1 -->
+      <label>Título da demanda</label>
+      <input type="text" placeholder="Digite o título da demanda">
+
+      <!-- Linha 2 -->
+      <div class="linha">
+        <div class="campo">
+          <label>Prioridade</label>
+          <select>
+            <option>Selecione</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>Status</label>
+          <select>
+            <option>Selecione</option>
+            <option>Aberta</option>
+            <option>Em andamento</option>
+            <option>Concluída</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Linha 3 -->
+      <div class="linha">
+        <div class="campo">
+          <label>Link do GitLab</label>
+          <input type="text" placeholder="Cole o link do GitLab">
+        </div>
+
+        <div class="campo">
+          <label>Prazo</label>
+          <input type="date">
+        </div>
+      </div>
+
+      <!-- Linha 4 -->
+      <label>Descrição detalhada</label>
+      <textarea placeholder="Descreva a demanda"></textarea>
+
+      <!-- Botão -->
+      <button type="submit">ENVIAR DEMANDA</button>
+    </form>
+  </div>
+</app-container>

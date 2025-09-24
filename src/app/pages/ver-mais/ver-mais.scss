@@ -1,0 +1,99 @@
+.detalhes-demanda {
+  position: relative;
+  padding: 1rem;
+}
+
+.detalhes-demanda h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  font-family: Arial, sans-serif;
+}
+
+.status {
+  color: #0052cc;
+  font-weight: bold;
+}
+
+.prioridade.baixa {
+  color: green;
+  font-weight: bold;
+}
+
+.btn-acao {
+  background: #0052cc;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.btn-acao:hover {
+  background: #003d99;
+}
+
+.secao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.secao h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+.box-add {
+  background: #f1f1f1;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.box-add input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+}
+
+.box-add button {
+  margin-right: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.box-add button:first-of-type {
+  background: #28a745;
+  color: white;
+}
+
+.btn-cancelar {
+  background: #ccc;
+  color: black;
+}
+
+.item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item .data {
+  font-size: 0.8rem;
+  color: #555;
+}

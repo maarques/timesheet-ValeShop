@@ -1,0 +1,29 @@
+<app-topbar></app-topbar>
+<app-auth-layout>
+    <div class="login-form">
+
+    <h2>Login</h2>
+
+    <form>
+      <label>Email</label>
+      <input type="email" placeholder="Digite seu email aqui">
+
+      <label>Senha</label>
+      <input type="password" placeholder="Digite sua senha aqui">
+
+      <div class="options">
+      <label class="remember-me">
+      <input type="checkbox" /> Lembrar de mim
+      </label>
+      <a href="#" class="passforgot-link">Esqueceu a senha?</a>
+      </div>
+
+
+      <button type="submit">ENVIAR</button>
+    </form>
+
+    <p class="register-link">
+      Ainda não tem uma conta? <a routerLink="/register">Cadastre-se!</a>
+    </p>
+  </div>
+</app-auth-layout>

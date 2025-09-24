@@ -1,0 +1,86 @@
+<div class="data-topo">
+  {{ dataAtual }}
+</div>
+
+<div class="painel-container">
+
+  <div class="filters">
+    <select>
+      <option>Funcionário</option>
+    </select>
+    <select>
+      <option>Prioridade</option>
+    </select>
+    <select>
+      <option>Período</option>
+    </select>
+    <button pButton type="button" label="Aplicar" class="p-button-primary"></button>
+    <button pButton type="button" label="Limpar Filtro" class="p-button-secondary"></button>
+  </div>
+
+  <p class="info-text">
+    Hoje temos {{resumo.total}} demandas ativas, {{resumo.atrasadas}} atrasadas e 
+    {{resumo.funcionarioTop}} é o funcionário com mais demandas (12).
+  </p>
+
+  <div class="cards">
+    <div class="card"> 
+      <h2>{{resumo.total}}</h2>
+      <p>Total de demandas ativas</p>
+    </div>
+    <div class="card"> 
+      <h2>{{resumo.concluidas}}</h2>
+      <p>Demandas Concluídas</p>
+    </div>
+    <div class="card"> 
+      <h2>{{resumo.atrasadas}}</h2>
+      <p>Demandas Atrasadas</p>
+    </div>
+    <div class="card"> 
+      <p>Funcionário com mais demandas</p>
+      <h3>{{resumo.funcionarioTop}}</h3>
+    </div>
+  </div>
+
+  <div class="charts">
+    <app-container>
+      <p-chart type="bar" [data]="chartFuncionarios"></p-chart>
+    </app-container>
+    <app-container>
+      <p-chart type="bar" [data]="chartAtraso"></p-chart>
+    </app-container>
+  </div>
+
+  <app-container [customStyles]="{ 'max-height': '400px', 'overflow-y': 'auto' }">
+    <p-table [value]="demandas">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Funcionário</th>
+          <th>Título da Demanda</th>
+          <th>Prioridade</th>
+          <th>Status</th>
+          <th>Prazo</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-demanda>
+        <tr>
+          <td>{{demanda.funcionario}}</td>
+          <td>{{demanda.titulo}}</td>
+          <td>{{demanda.prioridade}}</td>
+          <td>
+            <span 
+              class="status-badge" 
+              [ngClass]="{
+                'status-iniciada': demanda.status === 'Iniciada',
+                'status-autorizada': demanda.status === 'Autorizada para Produção',
+                'status-liberada': demanda.status === 'Liberada para Teste'
+              }">
+              {{ demanda.status }}
+            </span>
+          </td>
+          <td>{{demanda.prazo}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </app-container>
+</div>
