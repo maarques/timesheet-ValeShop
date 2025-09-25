@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { ContainerModule } from '../../components/container/container.module';
-import { Topbar } from '../../components/topbar/topbar';
 
 @Component({
   selector: 'app-demandas',
-  imports: [ContainerModule, Topbar],
+  imports: [ContainerModule],
   templateUrl: './demandas.html',
   styleUrl: './demandas.scss'
 })

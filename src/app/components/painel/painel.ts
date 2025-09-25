@@ -10,18 +10,18 @@ import { PainelService } from '../../services/painel.service';
 export class Painel implements OnInit {
   resumo: any;
   demandas: any[] = [];
-  chartFuncionarios: any;
-  chartAtraso: any;
+    chartFuncionarios: any;
+    chartAtraso: any;
 
   dataAtual!: string;
 
   constructor(private painelService: PainelService) {}
 
   ngOnInit(): void {
-    this.resumo = this.painelService.getResumo();
-    this.demandas = this.painelService.getDemandas();
-    this.chartFuncionarios = this.painelService.getChartFuncionarios();
-    this.chartAtraso = this.painelService.getChartAtraso();
+    // this.resumo = this.painelService.getResumo();
+    // this.demandas = this.painelService.getDemandas();
+    // this.chartFuncionarios = this.painelService.getChartFuncionarios();
+    // this.chartAtraso = this.painelService.getChartAtraso();
 
     const hoje = new Date();
     this.dataAtual = hoje.toLocaleDateString('pt-BR', {

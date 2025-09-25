@@ -1,25 +1,27 @@
-<app-topbar></app-topbar>
 <app-auth-layout>
-    <div class="login-form">
+  <div class="login-form">
 
     <h2>Login</h2>
 
-    <form>
+    <form (ngSubmit)="onSubmit()">
       <label>Email</label>
-      <input type="email" placeholder="Digite seu email aqui">
+      <input type="email" placeholder="Digite seu email aqui" [(ngModel)]="credentials.email" name="email" required>
 
       <label>Senha</label>
-      <input type="password" placeholder="Digite sua senha aqui">
+      <input type="password" placeholder="Digite sua senha aqui" [(ngModel)]="credentials.password" name="password" required>
 
-      <div class="options">
-      <label class="remember-me">
-      <input type="checkbox" /> Lembrar de mim
-      </label>
-      <a href="#" class="passforgot-link">Esqueceu a senha?</a>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
       </div>
 
+      <div class="options">
+        <label class="remember-me">
+          <input type="checkbox" /> Lembrar de mim
+        </label>
+        <a href="#" class="passforgot-link">Esqueceu a senha?</a>
+      </div>
 
-      <button type="submit">ENVIAR</button>
+      <button type="submit">ENTRAR</button>
     </form>
 
     <p class="register-link">

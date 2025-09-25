@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { PainelModule } from '../../components/painel/painel.module';
-import { Topbar } from '../../components/topbar/topbar';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [PainelModule, Topbar],
+  imports: [PainelModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

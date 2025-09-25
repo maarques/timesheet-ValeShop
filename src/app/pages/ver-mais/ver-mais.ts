@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Topbar } from '../../components/topbar/topbar';
 import { ContainerModule } from '../../components/container/container.module';
 
 @Component({
   selector: 'app-ver-mais',
-  imports: [CommonModule, FormsModule, ContainerModule, Topbar],
+  imports: [CommonModule, FormsModule, ContainerModule],
   templateUrl: './ver-mais.html',
   styleUrl: './ver-mais.scss'
 })

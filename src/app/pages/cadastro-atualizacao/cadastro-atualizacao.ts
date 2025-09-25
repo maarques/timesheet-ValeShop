@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { ContainerModule } from '../../components/container/container.module';
-import { Topbar } from '../../components/topbar/topbar';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro-atualizacao',
-  imports: [ContainerModule, Topbar],
+  imports: [
+    ContainerModule,
+    RouterLink
+  ],
   templateUrl: './cadastro-atualizacao.html',
   styleUrls: ['./cadastro-atualizacao.scss']
 })
