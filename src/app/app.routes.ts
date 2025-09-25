@@ -6,16 +6,19 @@ import { CadastroAtualizacao } from './pages/cadastro-atualizacao/cadastro-atual
 import { VerMais } from './pages/ver-mais/ver-mais';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard'; 
+import { publicGuard } from './guards/public.guard';
 
 export const routes: Routes = [
   // Rotas Públicas (não precisam de login)
   {
     path: 'login',
-    loadComponent: () => Login
+    loadComponent: () => Login,
+    canActivate: [publicGuard]
   },
   {
     path: 'register',
-    loadComponent: () => Register
+    loadComponent: () => Register,
+    canActivate: [publicGuard]
   },
   // Rotas Protegidas (precisam de login)
   {

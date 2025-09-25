@@ -1,10 +1,10 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { BehaviorSubject, tap, map, Observable } from 'rxjs';
 import { PainelService } from './painel.service';
 
-// Classe auxiliar para ambiente não-browser (SSR)
+// Classe auxiliar para o ambiente de servidor (SSR)
 class MockStorage implements Storage {
   [name: string]: any;
   length: number = 0;
@@ -25,34 +25,48 @@ export class AuthService {
   isLoggedIn$: Observable<boolean>;
 
   private storage: Storage;
+  private rememberMe = false;
 
   constructor(
     private painelService: PainelService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.storage = isPlatformBrowser(this.platformId) ? localStorage : new MockStorage();
+    this.storage = isPlatformBrowser(this.platformId)
+      ? localStorage
+      : new MockStorage();
+
     this.loadUserFromStorage();
 
     this.isLoggedIn$ = this.user$.pipe(map(user => !!user));
     this.isAdmin$ = this.user$.pipe(
-      // Verificação case-insensitive para robustez
       map(user => !!user && user.userType?.toLowerCase() === 'administrador')
     );
   }
 
   private loadUserFromStorage(): void {
+    const remember = this.storage.getItem('rememberMe') === 'true';
     const user = this.storage.getItem('user_data');
-    if (user) {
+
+    if (user && remember) {
+      // Apenas carrega o usuário se a opção "Lembrar de mim" estiver ativa
       this.userSubject.next(JSON.parse(user));
+      this.rememberMe = true;
+    } else {
+      // Se não for para lembrar, garante que o storage esteja limpo ao carregar
+      this.clearStorage();
     }
   }
 
-  login(credentials: { email: string, password: string }) {
+  login(credentials: { email: string, password: string, rememberMe: boolean }) {
     return this.painelService.login(credentials).pipe(
       tap((response: any) => {
+        this.rememberMe = credentials.rememberMe;
+        
         this.storage.setItem('token', response.token);
         this.storage.setItem('user_data', JSON.stringify(response.userResponseDTO));
+        this.storage.setItem('rememberMe', JSON.stringify(this.rememberMe));
+
         this.userSubject.next(response.userResponseDTO);
 
         if (response.userResponseDTO.userType?.toLowerCase() === 'administrador') {
@@ -65,18 +79,24 @@ export class AuthService {
   }
 
   logout() {
-    this.storage.removeItem('token');
-    this.storage.removeItem('user_data');
+    this.clearStorage();
     this.userSubject.next(null);
     this.router.navigate(['/login']);
-  }
-
-  getUser() {
-    return this.userSubject.value;
   }
 
   isLoggedIn(): boolean {
     return !!this.storage.getItem('token');
   }
+
+  getCurrentUser(): any | null {
+    return this.userSubject.getValue();
+  }
+
+  private clearStorage(): void {
+    this.storage.removeItem('token');
+    this.storage.removeItem('user_data');
+    this.storage.removeItem('rememberMe');
+  }
 }
+
 

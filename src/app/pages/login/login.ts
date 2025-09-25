@@ -1,46 +1,48 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
-import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [AuthLayout, FormsModule, CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AuthLayout,
+    RouterLink
+  ],
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrls: ['./login.scss']
 })
 export class Login {
   credentials = {
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   };
-
   errorMessage: string | null = null;
-  submitted = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  onSubmit() {
-    this.submitted = true; 
-    this.errorMessage = null;
-
+  onSubmit(): void {
     if (!this.credentials.email || !this.credentials.password) {
-      this.errorMessage = 'Por favor, preencha o e-mail e a senha corretamente.';
-      return; 
+      this.errorMessage = 'Por favor, preencha o e-mail e a senha.';
+      return;
     }
 
     this.authService.login(this.credentials).subscribe({
       next: () => {
+        console.log('Login bem-sucedido!');
+        this.errorMessage = null;
       },
       error: (err) => {
-        if (err.status === 409) {
-          this.errorMessage = 'Email ou senha incorretos.';
-        } else {
-          this.errorMessage = 'Ocorreu um erro inesperado. Tente novamente mais tarde.';
-        }
+        this.errorMessage = 'Email ou senha inválidos. Por favor, tente novamente.';
       }
     });
   }
