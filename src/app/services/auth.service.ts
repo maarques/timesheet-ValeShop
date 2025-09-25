@@ -1,11 +1,13 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, tap, map, Observable } from 'rxjs';
 import { PainelService } from './painel.service';
 
+// Classe auxiliar para ambiente não-browser (SSR)
 class MockStorage implements Storage {
-  length = 0;
+  [name: string]: any;
+  length: number = 0;
   clear(): void {}
   getItem(key: string): string | null { return null; }
   key(index: number): string | null { return null; }
@@ -17,8 +19,11 @@ class MockStorage implements Storage {
   providedIn: 'root'
 })
 export class AuthService {
-  private userSubject = new BehaviorSubject<any>(null);
+  private userSubject = new BehaviorSubject<any | null>(null);
   user$ = this.userSubject.asObservable();
+  isAdmin$: Observable<boolean>;
+  isLoggedIn$: Observable<boolean>;
+
   private storage: Storage;
 
   constructor(
@@ -26,13 +31,14 @@ export class AuthService {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.storage = localStorage; 
-    } else {
-      this.storage = new MockStorage();
-    }
-
+    this.storage = isPlatformBrowser(this.platformId) ? localStorage : new MockStorage();
     this.loadUserFromStorage();
+
+    this.isLoggedIn$ = this.user$.pipe(map(user => !!user));
+    this.isAdmin$ = this.user$.pipe(
+      // Verificação case-insensitive para robustez
+      map(user => !!user && user.userType?.toLowerCase() === 'administrador')
+    );
   }
 
   private loadUserFromStorage(): void {
@@ -45,13 +51,11 @@ export class AuthService {
   login(credentials: { email: string, password: string }) {
     return this.painelService.login(credentials).pipe(
       tap((response: any) => {
-        // Armazena o token e os dados do usuário (seguro para SSR)
         this.storage.setItem('token', response.token);
         this.storage.setItem('user_data', JSON.stringify(response.userResponseDTO));
         this.userSubject.next(response.userResponseDTO);
 
-        // Redireciona com base no tipo de usuário
-        if (response.userResponseDTO.userType === 'Administrador') {
+        if (response.userResponseDTO.userType?.toLowerCase() === 'administrador') {
           this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/demandas']);

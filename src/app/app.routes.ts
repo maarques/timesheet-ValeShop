@@ -5,8 +5,10 @@ import { Demandas } from './pages/demandas/demandas';
 import { CadastroAtualizacao } from './pages/cadastro-atualizacao/cadastro-atualizacao';
 import { VerMais } from './pages/ver-mais/ver-mais';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { authGuard } from './guards/auth.guard'; 
 
 export const routes: Routes = [
+  // Rotas Públicas (não precisam de login)
   {
     path: 'login',
     loadComponent: () => Login
@@ -15,21 +17,30 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => Register
   },
+  // Rotas Protegidas (precisam de login)
   {
     path: 'demandas',
-    loadComponent: () => Demandas
+    loadComponent: () => Demandas,
+    canActivate: [authGuard],
+    data: { roles: ['Administrador', 'Normal'] }
   },
   {
     path: 'cadastro-demanda',
-    loadComponent: () => CadastroAtualizacao
+    loadComponent: () => CadastroAtualizacao,
+    canActivate: [authGuard],
+    data: { roles: ['Normal'] } 
   },
   {
-    path: 'ver-mais',
-    loadComponent: () => VerMais
+    path: 'ver-mais', 
+    loadComponent: () => VerMais,
+    canActivate: [authGuard],
+    data: { roles: ['Administrador', 'Normal'] }
   },
   {
     path: 'dashboard',
-    loadComponent: () => Dashboard
+    loadComponent: () => Dashboard,
+    canActivate: [authGuard],
+    data: { roles: ['Administrador'] } 
   },
   {
     path: '',
@@ -37,3 +48,4 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
 ];
+
