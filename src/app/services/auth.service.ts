@@ -32,16 +32,17 @@ export class AuthService {
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    this.isAdmin$ = this.user$.pipe(
+      map(user => {
+        return !!user && user.userType?.toLowerCase() === 'administrador';
+      })
+    );
+    this.isLoggedIn$ = this.user$.pipe(map(user => !!user));
     this.storage = isPlatformBrowser(this.platformId)
       ? localStorage
       : new MockStorage();
 
     this.loadUserFromStorage();
-
-    this.isLoggedIn$ = this.user$.pipe(map(user => !!user));
-    this.isAdmin$ = this.user$.pipe(
-      map(user => !!user && user.userType?.toLowerCase() === 'administrador')
-    );
   }
 
   private loadUserFromStorage(): void {
@@ -49,11 +50,9 @@ export class AuthService {
     const user = this.storage.getItem('user_data');
 
     if (user && remember) {
-      // Apenas carrega o usuário se a opção "Lembrar de mim" estiver ativa
       this.userSubject.next(JSON.parse(user));
       this.rememberMe = true;
     } else {
-      // Se não for para lembrar, garante que o storage esteja limpo ao carregar
       this.clearStorage();
     }
   }
@@ -62,18 +61,13 @@ export class AuthService {
     return this.painelService.login(credentials).pipe(
       tap((response: any) => {
         this.rememberMe = credentials.rememberMe;
-        
+
         this.storage.setItem('token', response.token);
         this.storage.setItem('user_data', JSON.stringify(response.userResponseDTO));
         this.storage.setItem('rememberMe', JSON.stringify(this.rememberMe));
 
         this.userSubject.next(response.userResponseDTO);
 
-        if (response.userResponseDTO.userType?.toLowerCase() === 'administrador') {
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.router.navigate(['/demandas']);
-        }
       })
     );
   }
@@ -98,5 +92,4 @@ export class AuthService {
     this.storage.removeItem('rememberMe');
   }
 }
-
 

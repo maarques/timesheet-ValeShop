@@ -5,12 +5,10 @@
     @if (isLoggedIn$ | async) {
 
       @if (isAdmin$ | async) {
-        <!-- Menu do Administrador -->
         <a routerLink="/dashboard">Dashboard</a>
         <a routerLink="/demandas">Demandas</a>
         <a (click)="logout()" class="logout-link">Sair</a>
       } @else {
-        <!-- Menu do Usuário Normal -->
         <a routerLink="/demandas">Demandas</a>
         <a routerLink="/cadastro-demanda">Cadastro de Demanda</a>
         <a (click)="logout()" class="logout-link">Sair</a>

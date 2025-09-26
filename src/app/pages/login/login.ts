@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { AuthService } from '../../services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,7 @@ export class Login {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   onSubmit(): void {
     if (!this.credentials.email || !this.credentials.password) {
@@ -36,10 +37,16 @@ export class Login {
       return;
     }
 
+    this.errorMessage = null;
     this.authService.login(this.credentials).subscribe({
-      next: () => {
-        console.log('Login bem-sucedido!');
-        this.errorMessage = null;
+      next: (response) => {
+        setTimeout(() => {
+          if (response.userResponseDTO.userType?.toLowerCase() === 'administrador') {
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.router.navigate(['/demandas']);
+          }
+        }, 0);
       },
       error: (err) => {
         this.errorMessage = 'Email ou senha inválidos. Por favor, tente novamente.';
