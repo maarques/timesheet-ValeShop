@@ -1,95 +1,112 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { BehaviorSubject, tap, map, Observable } from 'rxjs';
-import { PainelService } from './painel.service';
-
-// Classe auxiliar para o ambiente de servidor (SSR)
-class MockStorage implements Storage {
-  [name: string]: any;
-  length: number = 0;
-  clear(): void {}
-  getItem(key: string): string | null { return null; }
-  key(index: number): string | null { return null; }
-  removeItem(key: string): void {}
-  setItem(key: string, value: string): void {}
-}
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
+import { PainelService } from './painel.service'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private userSubject = new BehaviorSubject<any | null>(null);
-  user$ = this.userSubject.asObservable();
-  isAdmin$: Observable<boolean>;
-  isLoggedIn$: Observable<boolean>;
-
-  private storage: Storage;
+  private platformId = inject(PLATFORM_ID);
+  private userSubject = new BehaviorSubject<any>(null);
   private rememberMe = false;
+
+  user$ = this.userSubject.asObservable();
+  isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user));
+  isAdmin$: Observable<boolean> = this.user$.pipe(
+    map(user => user?.userType?.toLowerCase() === 'administrador')
+  );
+
+  private storage: Storage | MockStorage;
 
   constructor(
     private painelService: PainelService,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private router: Router
   ) {
-    this.isAdmin$ = this.user$.pipe(
-      map(user => {
-        return !!user && user.userType?.toLowerCase() === 'administrador';
-      })
-    );
-    this.isLoggedIn$ = this.user$.pipe(map(user => !!user));
-    this.storage = isPlatformBrowser(this.platformId)
-      ? localStorage
-      : new MockStorage();
-
+    if (isPlatformBrowser(this.platformId)) {
+      this.storage = localStorage; 
+    } else {
+      this.storage = new MockStorage();
+    }
     this.loadUserFromStorage();
   }
 
   private loadUserFromStorage(): void {
-    const remember = this.storage.getItem('rememberMe') === 'true';
-    const user = this.storage.getItem('user_data');
-
-    if (user && remember) {
-      this.userSubject.next(JSON.parse(user));
-      this.rememberMe = true;
-    } else {
+    const rememberMe = this.storage.getItem('rememberMe') === 'true';
+    if (!rememberMe) {
       this.clearStorage();
+      return;
+    }
+
+    const user = this.storage.getItem('user');
+    const token = this.storage.getItem('token');
+
+    if (user && token) {
+      this.userSubject.next(JSON.parse(user));
     }
   }
 
-  login(credentials: { email: string, password: string, rememberMe: boolean }) {
+  getCurrentUser(): any {
+    return this.userSubject.getValue();
+  }
+
+  login(credentials: { email: string, password: string, rememberMe: boolean }): Observable<any> {
+    this.rememberMe = credentials.rememberMe;
+
     return this.painelService.login(credentials).pipe(
       tap((response: any) => {
-        this.rememberMe = credentials.rememberMe;
+        const user = response.userResponseDTO;
+        const token = response.token;
 
-        this.storage.setItem('token', response.token);
-        this.storage.setItem('user_data', JSON.stringify(response.userResponseDTO));
-        this.storage.setItem('rememberMe', JSON.stringify(this.rememberMe));
+        this.storage.setItem('user', JSON.stringify(user));
+        this.storage.setItem('token', token);
+        this.storage.setItem('rememberMe', this.rememberMe.toString());
 
-        this.userSubject.next(response.userResponseDTO);
-
+        this.userSubject.next(user);
+      }),
+      catchError(err => {
+        this.clearStorage();
+        throw err;
       })
     );
   }
 
-  logout() {
+  register(credentials: { email: string, password: string }): Observable<any> {
+    const registerData = {
+      ...credentials,
+      userType: 'Normal' 
+    };
+    return this.painelService.registerUser(registerData);
+  }
+  
+  logout(): void {
     this.clearStorage();
     this.userSubject.next(null);
     this.router.navigate(['/login']);
   }
+  
+  private clearStorage(): void {
+    this.storage.removeItem('user');
+    this.storage.removeItem('token');
+    this.storage.removeItem('rememberMe');
+  }
 
-  isLoggedIn(): boolean {
+   isLoggedIn(): boolean {
     return !!this.storage.getItem('token');
   }
 
-  getCurrentUser(): any | null {
-    return this.userSubject.getValue();
-  }
+}
 
-  private clearStorage(): void {
-    this.storage.removeItem('token');
-    this.storage.removeItem('user_data');
-    this.storage.removeItem('rememberMe');
-  }
+// Classe auxiliar para ambientes não-browser (SSR)
+class MockStorage implements Storage {
+  [name: string]: any;
+  length = 0;
+  clear(): void {}
+  getItem(key: string): string | null { return null; }
+  key(index: number): string | null { return null; }
+  removeItem(key: string): void {}
+  setItem(key: string, value: string): void {}
 }
 

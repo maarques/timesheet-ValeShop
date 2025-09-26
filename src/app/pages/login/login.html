@@ -6,7 +6,8 @@
       <input type="email" placeholder="Digite seu email aqui" [(ngModel)]="credentials.email" name="email" required>
 
       <label>Senha</label>
-      <input type="password" placeholder="Digite sua senha aqui" [(ngModel)]="credentials.password" name="password" required>
+      <input type="password" placeholder="Digite sua senha aqui" [(ngModel)]="credentials.password" name="password"
+        required>
 
       <div class="options">
         <label class="remember-me">
@@ -15,9 +16,8 @@
         <a routerLink="/forgot-password" class="passforgot-link">Esqueceu a senha?</a>
       </div>
 
-      <!-- Mensagem de erro -->
       @if (errorMessage) {
-        <div class="error-message">{{ errorMessage }}</div>
+      <div class="error-message">{{ errorMessage }}</div>
       }
 
       <button type="submit">ENTRAR</button>
@@ -27,4 +27,3 @@
     </p>
   </div>
 </app-auth-layout>
-
