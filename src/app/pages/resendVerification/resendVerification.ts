@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { AuthService } from '../../services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,8 @@ export class ResendVerification {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) { }
 
   onSubmit(): void {
@@ -35,8 +37,10 @@ export class ResendVerification {
     this.errorMessage = null;
     this.authService.resendVerifyEmail(this.email).subscribe({
       next: (response) => {
-        console.log(response);
-        this.router.navigate(['/login']);
+        this.toastr.success('E-mail de verificação reenviado com sucesso! Por favor, verifique o seu e-mail.', 'Sucesso!');
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 3000);
       },
       error: (err) => {
         console.log(err);
