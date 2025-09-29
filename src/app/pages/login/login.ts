@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { AuthService } from '../../services/auth.service';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -49,6 +48,11 @@ export class Login {
         }, 0);
       },
       error: (err) => {
+        console.log(err);
+        if (err.error?.message === "Usuário desabilitado") {
+          this.errorMessage = 'Sua conta está desabilitada. Por favor, verifique seu e-mail para mais informações.';
+          return;
+        }
         this.errorMessage = 'Email ou senha inválidos. Por favor, tente novamente.';
       }
     });

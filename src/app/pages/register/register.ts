@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -12,8 +12,8 @@ import { ToastrService } from 'ngx-toastr';
   imports: [
     CommonModule,
     FormsModule,
-    AuthLayout,
-    RouterLink
+    RouterLink,
+    AuthLayout
   ],
   templateUrl: './register.html',
   styleUrl: './register.scss'
@@ -24,21 +24,26 @@ export class Register {
     password: '',
     confirmPassword: ''
   }
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService
-  ) { }
+  ) { } 
 
   onSubmit(): void {
+    this.errorMessage = null;
+    this.successMessage = null;
+
     if (!this.credentials.email || !this.credentials.password || !this.credentials.confirmPassword) {
-      this.toastr.error('Por favor, preencha todos os campos.', 'Erro de Validação');
+      this.errorMessage = 'Por favor, preencha todos os campos.';
       return;
     }
 
     if (this.credentials.password !== this.credentials.confirmPassword) {
-      this.toastr.error('As senhas não coincidem.', 'Erro de Validação');
+      this.errorMessage = 'As senhas não coincidem.';
       return;
     }
 
@@ -49,15 +54,16 @@ export class Register {
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
-        this.toastr.success('Conta criada com sucesso! Verifique seu e-mail para ativar.', 'Sucesso!');
+        this.toastr.success('Conta criada com sucesso! Por favor, verifique o seu email!', 'Sucesso!');
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 3000);
       },
       error: (err) => {
         const message = err.error?.message || 'Erro ao registrar. O e-mail já pode estar em uso.';
-        this.toastr.error(message, 'Erro no Registo');
+        this.toastr.error(message, 'Erro!');
       }
     });
   }
 }
+

@@ -1,12 +1,14 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
-import { provideServerRendering, withRoutes } from '@angular/ssr';
+import { provideServerRendering } from '@angular/platform-server';
 import { appConfig } from './app.config';
-import { serverRoutes } from './app.routes.server';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(withRoutes(serverRoutes))
+    provideServerRendering(),
+    provideAnimationsAsync('noop')
   ]
 };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);
+
