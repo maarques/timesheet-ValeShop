@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
     AuthLayout
   ],
   templateUrl: './register.html',
-  styleUrls: ['./register.scss']
+  styleUrl: './register.scss'
 })
 export class Register {
   credentials = {
@@ -26,7 +27,11 @@ export class Register {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toastr: ToastrService
+  ) { } 
 
   onSubmit(): void {
     this.errorMessage = null;
@@ -49,13 +54,14 @@ export class Register {
 
     this.authService.register(registerData).subscribe({
       next: (response) => {
-        this.successMessage = response.message || 'Conta criada com sucesso! Verifique seu e-mail.';
+        this.toastr.success('Conta criada com sucesso! Você será redirecionado.', 'Sucesso!');
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 3000);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Erro ao registrar. O e-mail já pode estar em uso.';
+        const message = err.error?.message || 'Erro ao registrar. O e-mail já pode estar em uso.';
+        this.toastr.error(message, 'Erro!');
       }
     });
   }
