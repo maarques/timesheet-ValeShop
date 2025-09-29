@@ -16,8 +16,8 @@ import e from 'express';
     AuthLayout,
     RouterLink
   ],
-  templateUrl: './resendVerification.html',
-  styleUrls: ['./resendVerification.scss']
+  templateUrl: './resend-verification.html',
+  styleUrls: ['./resend-verification.scss']
 })
 export class ResendVerification {
   email: string = '';
@@ -44,7 +44,6 @@ export class ResendVerification {
         }, 3000);
       },
       error: (err) => {
-        console.log(err);
         this.errorMessage = err?.error?.message || 'Erro ao reenviar o e-mail de verificação. Por favor, tente novamente.';
       }
     });

@@ -8,7 +8,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard'; 
 import { publicGuard } from './guards/public.guard';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
-import { ResendVerification } from './pages/resendVerification/resendVerification';
+import { ResendVerification } from './pages/resend-verification/resend-verification';
 
 export const routes: Routes = [
   {
