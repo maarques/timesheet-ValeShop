@@ -7,8 +7,8 @@ import { VerMais } from './pages/ver-mais/ver-mais';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard'; 
 import { publicGuard } from './guards/public.guard';
-import { ResendVerification } from './pages/resendVerification/resendVerification';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { ResendVerification } from './pages/resendVerification/resendVerification';
 
 export const routes: Routes = [
   // Rotas Públicas (não precisam de login)
