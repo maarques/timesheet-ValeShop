@@ -8,6 +8,7 @@ import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard'; 
 import { publicGuard } from './guards/public.guard';
 import { ResendVerification } from './pages/resendVerification/resendVerification';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
 
 export const routes: Routes = [
   // Rotas Públicas (não precisam de login)
@@ -26,11 +27,11 @@ export const routes: Routes = [
     loadComponent: () => ResendVerification,
     canActivate: [publicGuard]
   },
-  // {
-  //   path: 'forgot-password',
-  //   loadComponent: () => ForgotPassword,
-  //   canActivate: [publicGuard]
-  // },
+  {
+    path: 'forgot-password',
+    loadComponent: () => ForgotPassword,
+    canActivate: [publicGuard]
+  },
   // Rotas Protegidas (precisam de login)
   {
     path: 'demandas',

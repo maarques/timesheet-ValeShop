@@ -77,6 +77,9 @@ export class AuthService {
     return this.painelService.resendVerifyEmail({ email });
   }
 
+  forgotPassword(email: string): Observable<any> {
+    return this.painelService.forgotPassword({ email });
+  }
   register(credentials: { email: string, password: string }): Observable<any> {
     const registerData = {
       ...credentials,
