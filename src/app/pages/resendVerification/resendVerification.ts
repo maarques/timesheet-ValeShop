@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import e from 'express';
 
 @Component({
   selector: 'app-login',
@@ -44,7 +45,7 @@ export class ResendVerification {
       },
       error: (err) => {
         console.log(err);
-        this.errorMessage = 'Erro ao reenviar o e-mail de verificação. Por favor, tente novamente.';
+        this.errorMessage = err?.error?.message || 'Erro ao reenviar o e-mail de verificação. Por favor, tente novamente.';
       }
     });
   }
