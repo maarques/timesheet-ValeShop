@@ -21,6 +21,10 @@ export class PainelService {
     return this.http.get(`${this.apiUrl}/users/verify-email?token=${token}`);
   }
 
+  resendVerifyEmail(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/resend-verification`, userData);
+  }
+
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/users/login`, credentials);
   }
@@ -34,7 +38,6 @@ export class PainelService {
   }
 
   getAuthenticatedUserProfile(): Observable<any> {
-    // Assumindo que o token é enviado no header
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.get(`${this.apiUrl}/users/profile`, { headers });
   }

@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
-import { PainelService } from './painel.service'; 
+import { PainelService } from './painel.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class AuthService {
     private router: Router
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      this.storage = localStorage; 
+      this.storage = localStorage;
     } else {
       this.storage = new MockStorage();
     }
@@ -73,40 +73,43 @@ export class AuthService {
     );
   }
 
+  resendVerifyEmail(email: string): Observable<any> {
+    return this.painelService.resendVerifyEmail({ email });
+  }
+
   register(credentials: { email: string, password: string }): Observable<any> {
     const registerData = {
       ...credentials,
-      userType: 'Normal' 
+      userType: 'Normal'
     };
     return this.painelService.registerUser(registerData);
   }
-  
+
   logout(): void {
     this.clearStorage();
     this.userSubject.next(null);
     this.router.navigate(['/login']);
   }
-  
+
   private clearStorage(): void {
     this.storage.removeItem('user');
     this.storage.removeItem('token');
     this.storage.removeItem('rememberMe');
   }
 
-   isLoggedIn(): boolean {
+  isLoggedIn(): boolean {
     return !!this.storage.getItem('token');
   }
 
 }
 
-// Classe auxiliar para ambientes não-browser (SSR)
 class MockStorage implements Storage {
   [name: string]: any;
   length = 0;
-  clear(): void {}
+  clear(): void { }
   getItem(key: string): string | null { return null; }
   key(index: number): string | null { return null; }
-  removeItem(key: string): void {}
-  setItem(key: string, value: string): void {}
+  removeItem(key: string): void { }
+  setItem(key: string, value: string): void { }
 }
 

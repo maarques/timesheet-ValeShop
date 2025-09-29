@@ -1,5 +1,5 @@
 <div class="header-container">
-  <img src="/imagens/logo-valeshop.png" alt="Vale Shop Logo" />
+  <img routerLink="/" style="cursor: pointer;" src="/imagens/logo-valeshop.png" alt="Vale Shop Logo" />
 
   <div class="nav-links">
     @if (isLoggedIn$ | async) {
@@ -13,7 +13,6 @@
         <a routerLink="/cadastro-demanda">Cadastro de Demanda</a>
         <a (click)="logout()" class="logout-link">Sair</a>
       }
-
     }
   </div>
 </div>
