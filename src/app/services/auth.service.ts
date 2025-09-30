@@ -77,6 +77,10 @@ export class AuthService {
     return this.painelService.resendVerifyEmail({ email });
   }
 
+  verifyEmail(token: string): Observable<any> {
+    return this.painelService.verifyEmail(token);
+  } 
+
   forgotPassword(email: string): Observable<any> {
     return this.painelService.forgotPassword({ email });
   }

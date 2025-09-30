@@ -5,10 +5,11 @@ import { Demandas } from './pages/demandas/demandas';
 import { CadastroAtualizacao } from './pages/cadastro-atualizacao/cadastro-atualizacao';
 import { VerMais } from './pages/ver-mais/ver-mais';
 import { Dashboard } from './pages/dashboard/dashboard';
-import { authGuard } from './guards/auth.guard'; 
+import { authGuard } from './guards/auth.guard';
 import { publicGuard } from './guards/public.guard';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { ResendVerification } from './pages/resend-verification/resend-verification';
+import { VerifyEmail } from './pages/verify-email/verify-email';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,11 @@ export const routes: Routes = [
     loadComponent: () => ForgotPassword,
     canActivate: [publicGuard]
   },
+  {
+    path: 'verify-email',
+    loadComponent: () => VerifyEmail,
+    canActivate: [publicGuard]
+  },
   // Rotas Protegidas (precisam de login)
   {
     path: 'demandas',
@@ -42,10 +48,10 @@ export const routes: Routes = [
     path: 'cadastro-demanda',
     loadComponent: () => CadastroAtualizacao,
     canActivate: [authGuard],
-    data: { roles: ['Normal'] } 
+    data: { roles: ['Normal'] }
   },
   {
-    path: 'ver-mais', 
+    path: 'ver-mais',
     loadComponent: () => VerMais,
     canActivate: [authGuard],
     data: { roles: ['Administrador', 'Normal'] }
@@ -54,7 +60,7 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => Dashboard,
     canActivate: [authGuard],
-    data: { roles: ['Administrador'] } 
+    data: { roles: ['Administrador'] }
   },
   {
     path: '',
