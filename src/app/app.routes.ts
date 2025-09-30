@@ -51,10 +51,10 @@ export const routes: Routes = [
     data: { roles: ['Normal'] }
   },
   {
-    path: 'ver-mais',
-    loadComponent: () => VerMais,
+    path: 'ver-mais/:id',
+    component: VerMais,
     canActivate: [authGuard],
-    data: { roles: ['Administrador', 'Normal'] }
+    data: { roles: ['Administrador', 'Normal'] },
   },
   {
     path: 'dashboard',

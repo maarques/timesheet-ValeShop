@@ -69,6 +69,11 @@ export class PainelService {
     return this.http.get(`${this.apiUrl}/demands`, { headers });
   }
 
+  getDemandById(demandId: number): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    return this.http.get(`${this.apiUrl}/demands/${demandId}`, { headers });
+  }
+
   deleteProblem(demandId: number, index: number): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.delete(`${this.apiUrl}/demands/problem/${demandId}/${index}`, { headers });

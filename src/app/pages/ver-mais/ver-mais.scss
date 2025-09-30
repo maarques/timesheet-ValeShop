@@ -1,39 +1,68 @@
+app-container {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
 .detalhes-demanda {
-  position: relative;
-  padding: 1rem;
-}
-
-.detalhes-demanda h2 {
-  font-size: 1.4rem;
-  margin-bottom: 0.5rem;
   font-family: Arial, sans-serif;
-}
 
-.status {
-  color: #0052cc;
-  font-weight: bold;
-}
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
 
-.prioridade.baixa {
-  color: green;
-  font-weight: bold;
-}
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+  }
 
-.btn-acao {
-  background: #0052cc;
-  color: #fff;
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-}
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 
-.btn-acao:hover {
-  background: #003d99;
+    p {
+      margin: 0;
+      color: #333;
+      font-size: 1rem;
+
+      b {
+        color: #000;
+      }
+    }
+
+    a {
+      color: #00569e;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .descricao {
+    margin-bottom: 2rem;
+    h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      line-height: 1.6;
+      color: #555;
+    }
+  }
 }
 
 .secao {
@@ -41,59 +70,134 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  font-family: Arial, sans-serif;
+  h3 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
 }
 
-.secao h3 {
-  font-size: 1.2rem;
+.btn-acao,
+.btn-voltar {
+  background: linear-gradient(135deg, #004075, #00569e);
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
   font-weight: bold;
-  font-family: Arial, sans-serif;
+  transition: background 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.btn-voltar {
+  background: #6c757d;
+  &:hover {
+    background: #5a6268;
+  }
+}
+
+.btn-acao:hover {
+  background: #003d80;
 }
 
 .box-add {
-  background: #f1f1f1;
-  padding: 1rem;
+  background: #f9f9f9;
+  padding: 1.5rem;
   border-radius: 10px;
   margin-bottom: 1rem;
-}
+  border: 1px solid #eee;
 
-.box-add input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-}
+  textarea {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    min-height: 80px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+  }
 
-.box-add button {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
+  div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
 
-.box-add button:first-of-type {
-  background: #28a745;
-  color: white;
-}
+    button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+    }
 
-.btn-cancelar {
-  background: #ccc;
-  color: black;
+    .btn-salvar {
+      background-color: #28a745;
+      color: white;
+      &:hover {
+        background-color: #218838;
+      }
+    }
+
+    .btn-cancelar {
+      background: #ccc;
+      color: black;
+      &:hover {
+        background-color: #b3b3b3;
+      }
+    }
+  }
 }
 
 .item {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 12px;
-  padding: 0.8rem;
+  padding: 1rem;
   margin-bottom: 0.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-family: Arial, sans-serif;
+
+  p {
+    margin: 0;
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .item-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 1rem;
+  }
+
+  .data {
+    font-size: 0.8rem;
+    color: #555;
+  }
+
+  .btn-excluir {
+    background: transparent;
+    border: none;
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.item .data {
-  font-size: 0.8rem;
-  color: #555;
+.empty-text {
+  color: #777;
+  padding: 1rem;
+  text-align: center;
+  font-family: Arial, sans-serif;
 }

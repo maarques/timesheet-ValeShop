@@ -51,6 +51,7 @@ export class VerifyEmail implements OnInit {
       error: (err) => {
         this.verificationStatus = 'error';
         this.message =
+          err.error?.message ||
           'Ocorreu um erro ao verificar seu e-mail. O token pode ser inválido ou ter expirado. Por favor, solicite um novo link.';
         this.toastr.error(this.message, 'Erro de Verificação');
       },

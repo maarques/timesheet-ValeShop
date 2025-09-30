@@ -50,7 +50,6 @@ export class Demandas implements OnInit {
 
     demandas$.subscribe({
       next: (data) => {
-        console.log(data);
         this.demandas = data;
         this.isLoading = false;
         this.cdr.detectChanges();
