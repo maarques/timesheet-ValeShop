@@ -7,11 +7,10 @@ import { VerMais } from './pages/ver-mais/ver-mais';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard'; 
 import { publicGuard } from './guards/public.guard';
-import { ResendVerification } from './pages/resend-verification/resend-verification';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { ResendVerification } from './pages/resend-verification/resend-verification';
 
 export const routes: Routes = [
-  // Rotas Públicas (não precisam de login)
   {
     path: 'login',
     loadComponent: () => Login,

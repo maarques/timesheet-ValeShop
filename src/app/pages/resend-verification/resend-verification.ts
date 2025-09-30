@@ -43,7 +43,6 @@ export class ResendVerification {
         }, 3000);
       },
       error: (err) => {
-        console.log(err);
         this.errorMessage = err?.error?.message || 'Erro ao reenviar o e-mail de verificação. Por favor, tente novamente.';
       }
     });

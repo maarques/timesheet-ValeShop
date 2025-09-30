@@ -76,30 +76,5 @@
         text-decoration: underline;
       }
     }
-  }
-
-  .alert {
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .error-message {
-    margin-top: 1rem;
-    color: #D8000C;
-    background-color: #FFBABA;
-    padding: 0.5rem;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    text-align: center;
-  }
-  
-  .alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-  }
+  }   
 }

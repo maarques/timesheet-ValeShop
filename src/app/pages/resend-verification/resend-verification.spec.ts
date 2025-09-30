@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Login } from './login';
+import { ResendVerification } from './resend-verification';
 
-describe('Login', () => {
-  let component: Login;
-  let fixture: ComponentFixture<Login>;
+describe('ResendVerification', () => {
+  let component: ResendVerification;
+  let fixture: ComponentFixture<ResendVerification>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Login]
+      imports: [ResendVerification]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Login);
+    fixture = TestBed.createComponent(ResendVerification);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
