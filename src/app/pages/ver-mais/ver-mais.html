@@ -5,12 +5,14 @@
   </div>
 </app-container>
 } @else if (demanda) {
+
+
 <app-container>
   <div class="detalhes-demanda">
     <div class="header-actions">
       <h2>{{ demanda.title }}</h2>
-      @if (isAdmin) {
-      <button class="btn-acao btn-editar">Editar</button>
+      @if (!isAdmin) {
+      <button class="btn-acao btn-editar" (click)="editarDemanda()">Editar</button>
       }
     </div>
     <div class="info-grid">
@@ -36,54 +38,76 @@
   </div>
 </app-container>
 
+
+
 <!-- Seção de Problemas -->
 <app-container>
   <div class="secao">
     <h3>Problemas</h3>
-    <button class="btn-acao" (click)="abrirProblema = !abrirProblema">
+    @if(!isAdmin) {
+    <button class="btn-acao" (click)="abrirProblema = !abrirProblema" [disabled]="!!itemEmEdicao">
       Adicionar
     </button>
+  }
   </div>
   @if (abrirProblema) {
   <div class="box-add">
-    <textarea
-      [(ngModel)]="novoProblema"
-      placeholder="Descreva o problema"
-    ></textarea>
+    <textarea [(ngModel)]="novoProblema" placeholder="Descreva o problema"></textarea>
     <div>
-      <button
-        class="btn-salvar"
-        (click)="adicionarItem('problem', novoProblema)"
-      >
+      <button class="btn-salvar" (click)="adicionarItem('problem', novoProblema)">
         Salvar
       </button>
-      <button
-        class="btn-cancelar"
-        (click)="abrirProblema = false; novoProblema = ''"
-      >
+      <button class="btn-cancelar" (click)="abrirProblema = false; novoProblema = ''">
         Cancelar
       </button>
     </div>
   </div>
   } @for (problema of demanda.problems; track $index) {
+  <!-- VIEW MODE -->
+  @if (itemEmEdicao?.tipo !== 'problem' || itemEmEdicao?.index !== $index) {
   <div class="item">
     <p>{{ problema }}</p>
     <div class="item-actions">
+      @if(!isAdmin) {
+      <button class="btn-editar" (click)="iniciarEdicaoProblema($index)">
+        Editar
+      </button>
       <button class="btn-excluir" (click)="excluirItem('problem', $index)">
         Excluir
       </button>
+      }
     </div>
   </div>
+  }
+
+  <!-- EDIT MODE -->
+  @if (itemEmEdicao?.tipo === 'problem' && itemEmEdicao?.index === $index) {
+  <div class="box-add">
+    <textarea [(ngModel)]="valorEmEdicao" placeholder="Descreva o problema"></textarea>
+    <div>
+      <button class="btn-salvar" (click)="atualizarItem()">
+        Salvar
+      </button>
+      <button class="btn-cancelar" (click)="cancelarEdicao()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+  }
   } @empty {
   <p class="empty-text">Nenhum problema registrado.</p>
   }
 </app-container>
 
+
+
 <!-- Seção de Observações -->
 <app-container>
   <div class="secao">
     <h3>Observações</h3>
-    <button class="btn-acao" (click)="abrirObs = !abrirObs">Adicionar</button>
+    @if(!isAdmin) {
+    <button class="btn-acao" (click)="abrirObs = !abrirObs" [disabled]="!!itemEmEdicao">Adicionar</button>
+    }
   </div>
   @if (abrirObs) {
   <div class="box-add">
@@ -98,57 +122,97 @@
     </div>
   </div>
   } @for (obs of demanda.observations; track $index) {
+  <!-- VIEW MODE -->
+  @if (itemEmEdicao?.tipo !== 'observation' || itemEmEdicao?.index !== $index) {
   <div class="item">
     <p>{{ obs }}</p>
     <div class="item-actions">
+      @if(!isAdmin) {
+      <button class="btn-editar" (click)="iniciarEdicaoObservacao($index)">
+        Editar
+      </button>
       <button class="btn-excluir" (click)="excluirItem('observation', $index)">
         Excluir
       </button>
+      }
     </div>
   </div>
+  }
+  <!-- EDIT MODE -->
+  @if (itemEmEdicao?.tipo === 'observation' && itemEmEdicao?.index === $index) {
+  <div class="box-add">
+    <textarea [(ngModel)]="valorEmEdicao" placeholder="Escreva a observação"></textarea>
+    <div>
+      <button class="btn-salvar" (click)="atualizarItem()">
+        Salvar
+      </button>
+      <button class="btn-cancelar" (click)="cancelarEdicao()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+  }
   } @empty {
   <p class="empty-text">Nenhuma observação registrada.</p>
   }
 </app-container>
 
+
+
 <!-- Seção de Comentários -->
 <app-container>
   <div class="secao">
     <h3>Comentários</h3>
-    <button class="btn-acao" (click)="abrirComentario = !abrirComentario">
+
+    @if(isAdmin) {
+    <button class="btn-acao" (click)="abrirComentario = !abrirComentario" [disabled]="!!itemEmEdicao">
       Adicionar
     </button>
+    }
   </div>
   @if (abrirComentario) {
   <div class="box-add">
-    <textarea
-      [(ngModel)]="novoComentario"
-      placeholder="Escreva o comentário"
-    ></textarea>
+    <textarea [(ngModel)]="novoComentario" placeholder="Escreva o comentário"></textarea>
     <div>
-      <button
-        class="btn-salvar"
-        (click)="adicionarItem('comment', novoComentario)"
-      >
+      <button class="btn-salvar" (click)="adicionarItem('comment', novoComentario)">
         Salvar
       </button>
-      <button
-        class="btn-cancelar"
-        (click)="abrirComentario = false; novoComentario = ''"
-      >
+      <button class="btn-cancelar" (click)="abrirComentario = false; novoComentario = ''">
         Cancelar
       </button>
     </div>
   </div>
   } @for (comentario of demanda.comments; track $index) {
+  <!-- VIEW MODE -->
+  @if (itemEmEdicao?.tipo !== 'comment' || itemEmEdicao?.index !== $index) {
   <div class="item">
     <p>{{ comentario }}</p>
+    @if(isAdmin) {
     <div class="item-actions">
+      <button class="btn-editar" (click)="iniciarEdicaoComentario($index)">
+        Editar
+      </button>
       <button class="btn-excluir" (click)="excluirItem('comment', $index)">
         Excluir
       </button>
     </div>
+    }
   </div>
+  }
+  <!-- EDIT MODE -->
+  @if (itemEmEdicao?.tipo === 'comment' && itemEmEdicao?.index === $index) {
+  <div class="box-add">
+    <textarea [(ngModel)]="valorEmEdicao" placeholder="Escreva o comentário"></textarea>
+    <div>
+      <button class="btn-salvar" (click)="atualizarItem()">
+        Salvar
+      </button>
+      <button class="btn-cancelar" (click)="cancelarEdicao()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+  }
   } @empty {
   <p class="empty-text">Nenhum comentário registrado.</p>
   }

@@ -27,6 +27,9 @@ export class VerMais implements OnInit {
   novaObs = '';
   novoComentario = '';
 
+  itemEmEdicao: { tipo: 'problem' | 'observation' | 'comment'; index: number } | null = null;
+  valorEmEdicao = '';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -34,7 +37,7 @@ export class VerMais implements OnInit {
     private authService: AuthService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.isAdmin$.subscribe((isAdmin) => (this.isAdmin = isAdmin));
@@ -68,25 +71,32 @@ export class VerMais implements OnInit {
     });
   }
 
+  private traduzirTipo(tipo: 'problem' | 'observation' | 'comment'): string {
+    const mapaDeTraducao = {
+      problem: 'Problema',
+      observation: 'Observação',
+      comment: 'Comentário',
+    };
+    return mapaDeTraducao[tipo] || this.capitalize(tipo);
+  }
+
   adicionarItem(
     tipo: 'problem' | 'observation' | 'comment',
     valor: string
   ): void {
     if (!valor.trim() || !this.demanda) return;
 
-    // A API espera um objeto com a chave correspondente ('problem', 'observation' ou 'comment')
-    const data = { [tipo]: [valor] };
-    console.log(data);
+    const data = { [tipo + 's']: [valor] };
 
     this.painelService
       .registerProblemObservationOrComment(this.demanda.id, data)
       .subscribe({
         next: (updatedDemanda) => {
+          const tipoTraduzido = this.traduzirTipo(tipo);
           this.toastr.success(
-            `${this.capitalize(tipo)} adicionado com sucesso!`,
+            `${tipoTraduzido} adicionado com sucesso!`,
             'Sucesso'
           );
-          // Atualiza os dados locais com a resposta da API sem recarregar tudo
           this.demanda = {
             ...updatedDemanda,
             problems: updatedDemanda.problems || [],
@@ -97,7 +107,74 @@ export class VerMais implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.toastr.error(`Erro ao adicionar ${tipo}.`, 'Erro');
+          const tipoTraduzido = this.traduzirTipo(tipo);
+          this.toastr.error(`Erro ao adicionar ${tipoTraduzido.toLowerCase()}.`, 'Erro');
+        },
+      });
+  }
+
+  iniciarEdicao(tipo: 'problem' | 'observation' | 'comment', index: number): void {
+    this.abrirProblema = false;
+    this.abrirObs = false;
+    this.abrirComentario = false;
+
+    this.itemEmEdicao = { tipo, index };
+
+    switch (tipo) {
+      case 'problem':
+        this.valorEmEdicao = this.demanda.problems[index];
+        break;
+      case 'observation':
+        this.valorEmEdicao = this.demanda.observations[index];
+        break;
+      case 'comment':
+        this.valorEmEdicao = this.demanda.comments[index];
+        break;
+    }
+  }
+
+  iniciarEdicaoProblema(index: number): void {
+    this.iniciarEdicao('problem', index);
+  }
+
+  iniciarEdicaoObservacao(index: number): void {
+    this.iniciarEdicao('observation', index);
+  }
+
+  iniciarEdicaoComentario(index: number): void {
+    this.iniciarEdicao('comment', index);
+  }
+
+  cancelarEdicao(): void {
+    this.itemEmEdicao = null;
+    this.valorEmEdicao = '';
+  }
+
+  atualizarItem(): void {
+    if (!this.itemEmEdicao || !this.valorEmEdicao.trim()) {
+      this.cancelarEdicao();
+      return;
+    }
+
+    const { tipo, index } = this.itemEmEdicao;
+    const data = { [tipo]: this.valorEmEdicao };
+
+    this.painelService
+      .updateProblemObservationOrComment(this.demanda.id, index, data)
+      .subscribe({
+        next: () => {
+          const tipoTraduzido = this.traduzirTipo(tipo);
+          this.toastr.success(`${tipoTraduzido} atualizado com sucesso!`, 'Sucesso');
+
+          this.demanda[tipo + 's'][index] = this.valorEmEdicao;
+
+          this.cancelarEdicao();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          const tipoTraduzido = this.traduzirTipo(tipo);
+          this.toastr.error(`Erro ao atualizar ${tipoTraduzido.toLowerCase()}.`, 'Erro');
+          this.cancelarEdicao();
         },
       });
   }
@@ -129,14 +206,16 @@ export class VerMais implements OnInit {
 
     deleteObservable.subscribe({
       next: () => {
+        const tipoTraduzido = this.traduzirTipo(tipo);
         this.toastr.success(
-          `${this.capitalize(tipo)} excluído com sucesso!`,
+          `${tipoTraduzido} excluído com sucesso!`,
           'Sucesso'
         );
         this.loadDemanda(this.demanda.id); // Recarrega para obter o estado mais recente
       },
       error: (err) => {
-        this.toastr.error(`Erro ao excluir ${tipo}.`, 'Erro');
+        const tipoTraduzido = this.traduzirTipo(tipo);
+        this.toastr.error(`Erro ao excluir ${tipoTraduzido.toLowerCase()}.`, 'Erro');
       },
     });
   }
@@ -159,6 +238,13 @@ export class VerMais implements OnInit {
   capitalize(s: string) {
     if (!s) return '';
     return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  editarDemanda(): void {
+    if (this.demanda && this.demanda.id) {
+      console.log('Navegando para editar demanda com ID:', this.demanda.id);
+      this.router.navigate(['/editar-demanda', this.demanda.id]);
+    }
   }
 
   voltar(): void {

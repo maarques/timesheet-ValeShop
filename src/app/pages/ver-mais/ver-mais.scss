@@ -101,6 +101,11 @@ app-container {
   background: #003d80;
 }
 
+.btn-acao:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 .box-add {
   background: #f9f9f9;
   padding: 1.5rem;
@@ -180,6 +185,18 @@ app-container {
   .data {
     font-size: 0.8rem;
     color: #555;
+  }
+
+  .btn-editar {
+    background: transparent;
+    border: none;
+    color: #00569e;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .btn-excluir {

@@ -57,6 +57,12 @@ export const routes: Routes = [
     data: { roles: ['Administrador', 'Normal'] },
   },
   {
+    path: 'editar-demanda/:id',
+    loadComponent: () => CadastroAtualizacao,
+    canActivate: [authGuard],
+    data: { roles: ['Normal'] }
+  },
+  {
     path: 'dashboard',
     loadComponent: () => Dashboard,
     canActivate: [authGuard],
