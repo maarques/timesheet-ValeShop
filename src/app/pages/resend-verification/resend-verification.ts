@@ -5,7 +5,6 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../components/auth-layout/auth-layout';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
-import e from 'express';
 
 @Component({
   selector: 'app-login',
@@ -16,8 +15,8 @@ import e from 'express';
     AuthLayout,
     RouterLink
   ],
-  templateUrl: './resendVerification.html',
-  styleUrls: ['./resendVerification.scss']
+  templateUrl: './resend-verification.html',
+  styleUrls: ['./resend-verification.scss']
 })
 export class ResendVerification {
   email: string = '';
