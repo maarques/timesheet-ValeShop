@@ -66,8 +66,13 @@ export class CadastroAtualizacao implements OnInit {
   }
 
   onSubmit(): void {
+    const payload = {
+      ...this.demanda,
+      priority: Number(this.demanda.priority)
+    };
+
     if (this.isEditMode && this.demandaId) {
-      this.painelService.updateDemand(this.demandaId, this.demanda).subscribe({
+      this.painelService.updateDemand(this.demandaId, payload).subscribe({
         next: () => {
           this.toastr.success('Demanda atualizada com sucesso!', 'Sucesso!');
           this.router.navigate(['/demandas']);
@@ -77,15 +82,17 @@ export class CadastroAtualizacao implements OnInit {
         }
       });
     } else {
-      this.painelService.registerDemand(this.demanda).subscribe({
+      this.painelService.registerDemand(payload).subscribe({
         next: () => {
           this.toastr.success('Demanda cadastrada com sucesso!', 'Sucesso!');
           this.router.navigate(['/demandas']);
         },
         error: (err) => {
+          console.log(err);
           this.toastr.error(err.error?.message || 'Erro ao cadastrar a demanda.', 'Erro');
         }
       });
     }
   }
 }
+

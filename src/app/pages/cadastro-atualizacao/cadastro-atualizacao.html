@@ -14,9 +14,9 @@
           <label>Prioridade</label>
           <select [(ngModel)]="demanda.priority" name="priority" required>
             <option value="" disabled>Selecione</option>
-            <option value="Alta">Alta</option>
-            <option value="Média">Média</option>
-            <option value="Baixa">Baixa</option>
+            <option value="1">Alta</option>
+            <option value="2">Média</option>
+            <option value="3">Baixa</option>
           </select>
         </div>
 
@@ -24,8 +24,9 @@
           <label>Status</label>
           <select [(ngModel)]="demanda.status" name="status" required>
             <option value="" disabled>Selecione</option>
-            <option value="Aberta">Aberta</option>
-            <option value="Em andamento">Em andamento</option>
+            <option value="Iniciada">Iniciada</option>
+            <option value="Autorizada para Produção">Autorizada para Produção</option>
+            <option value="Liberada para Teste">Liberada para Teste</option>
             <option value="Concluída">Concluída</option>
           </select>
         </div>
@@ -53,3 +54,4 @@
     </form>
   </div>
 </app-container>
+
