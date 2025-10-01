@@ -88,7 +88,6 @@ export class CadastroAtualizacao implements OnInit {
           this.router.navigate(['/demandas']);
         },
         error: (err) => {
-          console.log(err);
           this.toastr.error(err.error?.message || 'Erro ao cadastrar a demanda.', 'Erro');
         }
       });
