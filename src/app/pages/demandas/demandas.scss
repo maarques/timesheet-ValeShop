@@ -23,6 +23,7 @@
   font-weight: bold;
   font-size: 12px;
   transition: background 0.3s;
+  width: 70%;
 }
 
 .search-bar input:hover {
@@ -116,4 +117,40 @@
 .empty-state-container .create-demand-btn {
   font-size: 1rem;
   padding: 0.7rem 1.5rem;
+}
+
+/* Estilos de Paginação */
+.paginacao-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 0.5rem;
+}
+
+.paginacao-container button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #00569e;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+}
+
+.paginacao-container button:hover:not(:disabled) {
+  background-color: #00569e;
+  color: #fff;
+}
+
+.paginacao-container button.active {
+  background-color: #00569e;
+  color: #fff;
+}
+
+.paginacao-container button:disabled {
+  background-color: #f0f0f0;
+  color: #ccc;
+  cursor: not-allowed;
 }

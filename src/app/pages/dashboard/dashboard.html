@@ -1,0 +1,107 @@
+<div class="dashboard-container">
+  <!-- Seção de Filtros -->
+  <div class="filtros-container">
+    <div class="filtro-item">
+      <select [(ngModel)]="filtros.funcionarioId">
+        <option value="todos">Todos Funcionários</option>
+        @for(usuario of usuarios; track usuario.id) {
+          <option [value]="usuario.id">{{ getNomeAbreviado(usuario.email) }}</option>
+        }
+      </select>
+    </div>
+    <div class="filtro-item">
+      <select [(ngModel)]="filtros.prioridade">
+        <option value="todas">Todas Prioridades</option>
+        <option value="1">Alta (1)</option>
+        <option value="2">Média (2)</option>
+        <option value="3">Baixa (3)</option>
+      </select>
+    </div>
+    <div class="filtro-item">
+      <input type="date" [(ngModel)]="filtros.periodo" />
+    </div>
+    <button class="btn btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
+    <button class="btn btn-limpar" (click)="limparFiltros()">Limpar Filtro</button>
+  </div>
+
+  <!-- Resumo -->
+  <p class="resumo-texto">{{ resumoTexto }}</p>
+
+  <!-- Cards de Estatísticas -->
+  <div class="cards-container">
+    <div class="card">
+      <div class="card-titulo">Total de demandas ativas</div>
+      <div class="card-valor">{{ totalDemandasAtivas }}</div>
+    </div>
+    <div class="card">
+      <div class="card-titulo">Demandas Concluídas</div>
+      <div class="card-valor">{{ demandasConcluidas }}</div>
+    </div>
+    <div class="card">
+      <div class="card-titulo">Demandas Atrasadas</div>
+      <div class="card-valor">{{ demandasAtrasadas }}</div>
+    </div>
+    <div class="card card-funcionario">
+      <div class="card-titulo">Funcionário com mais demandas</div>
+      <div class="funcionario-info">
+        <div class="avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+          </svg>
+        </div>
+        <div class="funcionario-nome">{{ funcionarioComMaisDemandas.nome }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="graficos-container">
+    <div class="grafico-card">
+      <h3 class="grafico-titulo">Demandas por funcionário</h3>
+      <div class="grafico-wrapper">
+        <canvas #demandasPorFuncionarioChart></canvas>
+      </div>
+    </div>
+    <div class="grafico-card">
+      <h3 class="grafico-titulo">Atraso de demandas por período</h3>
+      <div class="grafico-wrapper">
+        <canvas #atrasoDeDemandasChart></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Demandas -->
+  <div class="tabela-container">
+    <table class="tabela-demandas">
+      <thead>
+        <tr>
+          <th>Funcionário</th>
+          <th>Título da Demanda</th>
+          <th>Prioridade</th>
+          <th>Status</th>
+          <th>Prazo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(demanda of demandasFiltradas; track demanda.id) {
+          <tr>
+            <td>{{ getNomeAbreviado(demanda.owner) }}</td>
+            <td>{{ demanda.title }}</td>
+            <td>{{ demanda.priority }}</td>
+            <td>
+              <span class="status-badge status-{{demanda.status | lowercase | replace: ' ': '-'}}">
+                {{ demanda.status }}
+              </span>
+            </td>
+            <td>{{ demanda.date | date:'dd/MM/yyyy' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="sem-dados">Nenhuma demanda encontrada com os filtros aplicados.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+

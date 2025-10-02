@@ -41,6 +41,11 @@ export class PainelService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     return this.http.get(`${this.apiUrl}/users/profile`, { headers });
   }
+  
+  getAllUsers(): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    return this.http.get(`${this.apiUrl}/users/all`, { headers });
+  }
 
 
   // DEMAND ROUTES

@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationModal } from './confirmation-modal/confirmation-modal';
 import { take, filter } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-demandas',
@@ -18,17 +19,25 @@ import { take, filter } from 'rxjs/operators';
     RouterLink,
     DatePipe,
     ConfirmationModal,
+    FormsModule,
   ],
   templateUrl: './demandas.html',
   styleUrl: './demandas.scss',
 })
 export class Demandas implements OnInit, OnDestroy {
   demandas: any[] = [];
+  demandasFiltradas: any[] = [];
+  demandasPaginadas: any[] = [];
+  termoBusca = '';
   isLoading = true;
   isModalOpen = false;
   demandaParaExcluir: number | null = null;
   isAdmin = false;
   private authSubscription: Subscription | undefined;
+
+  // Controle de paginação
+  paginaAtual = 1;
+  itensPorPagina = 5;
 
   constructor(
     private painelService: PainelService,
@@ -57,13 +66,14 @@ export class Demandas implements OnInit, OnDestroy {
   loadDemandas(): void {
     this.isLoading = true;
 
-    const demandas$: Observable<any> = this.isAdmin 
-      ? this.painelService.getAllDemandRecord() 
+    const demandas$: Observable<any> = this.isAdmin
+      ? this.painelService.getAllDemandRecord()
       : this.painelService.getUserAllDemandRecord();
 
     demandas$.subscribe({
       next: (data) => {
-        this.demandas = data;
+        this.demandas = data || []; // Garante que 'demandas' seja sempre um array
+        this.filtrarDemandas();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -80,6 +90,52 @@ export class Demandas implements OnInit, OnDestroy {
       },
     });
   }
+
+  filtrarDemandas(): void {
+    const termo = this.termoBusca.toLowerCase();
+    if (!termo) {
+      this.demandasFiltradas = this.demandas;
+    } else {
+      this.demandasFiltradas = this.demandas.filter(demanda =>
+        demanda.title.toLowerCase().includes(termo) ||
+        (demanda.owner && demanda.owner.toLowerCase().includes(termo)) ||
+        demanda.status.toLowerCase().includes(termo)
+      );
+    }
+    this.paginaAtual = 1; // Reseta para a primeira página ao filtrar
+    this.atualizarPaginacao();
+  }
+
+  atualizarPaginacao(): void {
+    const indiceInicial = (this.paginaAtual - 1) * this.itensPorPagina;
+    const indiceFinal = indiceInicial + this.itensPorPagina;
+    this.demandasPaginadas = this.demandasFiltradas.slice(indiceInicial, indiceFinal);
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginas()) {
+      this.paginaAtual = pagina;
+      this.atualizarPaginacao();
+    }
+  }
+
+  proximaPagina(): void {
+    this.irParaPagina(this.paginaAtual + 1);
+  }
+
+  paginaAnterior(): void {
+    this.irParaPagina(this.paginaAtual - 1);
+  }
+
+  totalPaginas(): number {
+    return Math.ceil(this.demandasFiltradas.length / this.itensPorPagina);
+  }
+
+  getPaginas(): number[] {
+    const total = this.totalPaginas();
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
 
   solicitarExclusao(demandaId: number): void {
     this.demandaParaExcluir = demandaId;
@@ -102,6 +158,7 @@ export class Demandas implements OnInit, OnDestroy {
         this.demandas = this.demandas.filter(
           (d) => d.id !== this.demandaParaExcluir
         );
+        this.filtrarDemandas();
         this.fecharModal();
         this.cdr.detectChanges();
       },
@@ -116,3 +173,4 @@ export class Demandas implements OnInit, OnDestroy {
     this.router.navigate(['/ver-mais', demandaId]);
   }
 }
+
