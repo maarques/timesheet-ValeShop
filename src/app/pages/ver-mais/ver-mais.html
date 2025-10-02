@@ -17,10 +17,19 @@
     </div>
     <div class="info-grid">
       <p>
-        <b>Prioridade:</b> <span class="prioridade">{{ demanda.priority }}</span>
+        <b>Prioridade:</b> 
+        @if (isAdmin) {
+          <select class="owner-select" [(ngModel)]="demanda.priority" (change)="atualizarPrioridade()">
+            @for (priority of [1,2,3,4,5,6,7,8,9,10]; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+        } @else {
+          <span class="prioridade">{{ demanda.priority }}</span>
+        }
       </p>
       <p>
-        <b>Status:</b> <span class="status">{{ demanda.status }}</span>
+        <b>Status:</b> <span class="status-badge status-{{demanda.status | lowercase | replace: ' ': '-'}}">{{ demanda.status }}</span>
       </p>
       <p>
         <b>Prazo:</b> <span>{{ demanda.date | date : 'dd/MM/yyyy' }}</span>
@@ -28,6 +37,21 @@
       <p>
         <b>Link GitLab:</b>
         <a [href]="demanda.gitLink" target="_blank">{{ demanda.gitLink }}</a>
+      </p>
+      <p>
+        <b>Responsável:</b>
+        @if (isAdmin) {
+          <span class="owner-edit-container">
+            <select class="owner-select" [(ngModel)]="selectedOwnerId">
+              @for (user of allUsers; track user.id) {
+                <option [value]="user.id">{{ user.email.split('@')[0] | titlecase }}</option>
+              }
+            </select>
+            <button class="btn-salvar-dono" (click)="atualizarDono()">Salvar</button>
+          </span>
+        } @else {
+          <span class="owner-name">{{ demanda.owner | titlecase }}</span>
+        }
       </p>
     </div>
     <div class="descricao">
@@ -218,3 +242,4 @@
   }
 </app-container>
 }
+

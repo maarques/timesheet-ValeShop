@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map, take, filter, switchMap } from 'rxjs';
+import { map, take } from 'rxjs';
 
 export const authGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -15,26 +15,22 @@ export const authGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  return authService.user$.pipe(
-    filter((user) => user !== null), 
-    take(1),
-    switchMap((user) => {
-      if (!authService.isLoggedIn()) {
-        router.navigate(['/login']);
-        return [false];
-      }
+  if (!authService.isLoggedIn()) {
+    router.navigate(['/login']);
+    return false;
+  }
 
-      const allowedRoles = route.data['roles'] as Array<string>;
-      if (!allowedRoles || allowedRoles.length === 0) {
-        return [true];
-      }
+  const user = authService.getCurrentUser();
+  const allowedRoles = route.data['roles'] as Array<string>;
 
-      if (user && allowedRoles.includes(user.userType)) {
-        return [true];
-      } else {
-        authService.logout();
-        return [false];
-      }
-    })
-  );
+  if (!allowedRoles || allowedRoles.length === 0) {
+    return true;
+  }
+
+  if (user && allowedRoles.includes(user.userType)) {
+    return true;
+  } else {
+    authService.logout();
+    return false;
+  }
 };

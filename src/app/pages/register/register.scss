@@ -1,20 +1,26 @@
 .register-form {
   width: 100%;
   max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  
+  .header-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+  }
 
   .btn-voltar {
-    position: absolute;
-    top: 100px;
-    right: 570px;
     padding: 0.5rem 1.5rem;
     font-size: 0.9rem;
-    margin-top: 1.5rem;
     background: linear-gradient(135deg, #004075, #00569E);
     color: white;
     border: none;
     cursor: pointer;
     transition: background 0.3s ease;
     border-radius: 30px;
+    align-self: flex-start;
   }
 
   h2 {

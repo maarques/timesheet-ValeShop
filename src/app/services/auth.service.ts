@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, Injector } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -11,7 +11,6 @@ import { PainelService } from './painel.service';
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
   private userSubject = new BehaviorSubject<any>(null);
-  private rememberMe = false;
 
   user$ = this.userSubject.asObservable();
   isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user));
@@ -19,29 +18,34 @@ export class AuthService {
     map(user => user?.userType?.toLowerCase() === 'administrador')
   );
 
-  private storage: Storage | MockStorage;
+  // Lazy load PainelService to break circular dependency
+  private _painelService: PainelService | undefined;
+  private get painelService(): PainelService {
+    if (!this._painelService) {
+      this._painelService = this.injector.get(PainelService);
+    }
+    return this._painelService;
+  }
 
   constructor(
-    private painelService: PainelService,
-    private router: Router
+    private router: Router,
+    private injector: Injector
   ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.storage = localStorage;
-    } else {
-      this.storage = new MockStorage();
-    }
     this.loadUserFromStorage();
   }
 
   private loadUserFromStorage(): void {
-    const rememberMe = this.storage.getItem('rememberMe') === 'true';
-    if (!rememberMe) {
-      this.clearStorage();
+    if (!isPlatformBrowser(this.platformId)) {
       return;
     }
+    
+    let user = localStorage.getItem('user');
+    let token = localStorage.getItem('token');
 
-    const user = this.storage.getItem('user');
-    const token = this.storage.getItem('token');
+    if (!user || !token) {
+      user = sessionStorage.getItem('user');
+      token = sessionStorage.getItem('token');
+    }
 
     if (user && token) {
       this.userSubject.next(JSON.parse(user));
@@ -52,17 +56,27 @@ export class AuthService {
     return this.userSubject.getValue();
   }
 
-  login(credentials: { email: string, password: string, rememberMe: boolean }): Observable<any> {
-    this.rememberMe = credentials.rememberMe;
+  getToken(): string | null {
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
+  }
 
+  login(credentials: { email: string, password: string, rememberMe: boolean }): Observable<any> {
     return this.painelService.login(credentials).pipe(
       tap((response: any) => {
         const user = response.userResponseDTO;
         const token = response.token;
 
-        this.storage.setItem('user', JSON.stringify(user));
-        this.storage.setItem('token', token);
-        this.storage.setItem('rememberMe', this.rememberMe.toString());
+        // Choose storage based on "remember me" flag
+        const storage = credentials.rememberMe ? localStorage : sessionStorage;
+        
+        // Clear both storages first to ensure no old data remains
+        this.clearStorage();
+
+        storage.setItem('user', JSON.stringify(user));
+        storage.setItem('token', token);
 
         this.userSubject.next(user);
       }),
@@ -99,24 +113,20 @@ export class AuthService {
   }
 
   private clearStorage(): void {
-    this.storage.removeItem('user');
-    this.storage.removeItem('token');
-    this.storage.removeItem('rememberMe');
+    if(isPlatformBrowser(this.platformId)) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+    }
   }
 
   isLoggedIn(): boolean {
-    return !!this.storage.getItem('token');
+    if(isPlatformBrowser(this.platformId)) {
+        return !!this.getToken();
+    }
+    return false;
   }
 
-}
-
-class MockStorage implements Storage {
-  [name: string]: any;
-  length = 0;
-  clear(): void { }
-  getItem(key: string): string | null { return null; }
-  key(index: number): string | null { return null; }
-  removeItem(key: string): void { }
-  setItem(key: string, value: string): void { }
 }
 

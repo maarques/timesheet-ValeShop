@@ -9,6 +9,7 @@ import { Observable, of, Subscription } from 'rxjs';
 import { ConfirmationModal } from './confirmation-modal/confirmation-modal';
 import { take, filter } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { ReplacePipe } from '../../util/replace.pipe';
 
 @Component({
   selector: 'app-demandas',
@@ -20,6 +21,7 @@ import { FormsModule } from '@angular/forms';
     DatePipe,
     ConfirmationModal,
     FormsModule,
+    ReplacePipe,
   ],
   templateUrl: './demandas.html',
   styleUrl: './demandas.scss',
@@ -35,7 +37,6 @@ export class Demandas implements OnInit, OnDestroy {
   isAdmin = false;
   private authSubscription: Subscription | undefined;
 
-  // Controle de paginação
   paginaAtual = 1;
   itensPorPagina = 5;
 
@@ -49,8 +50,8 @@ export class Demandas implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.authSubscription = this.authService.user$.pipe(
-      filter(user => user !== null), // Aguarda até que o usuário esteja carregado
-      take(1) // Pega apenas a primeira emissão de usuário válido
+      filter(user => user !== null), 
+      take(1) 
     ).subscribe(user => {
       this.isAdmin = user?.userType?.toLowerCase() === 'administrador';
       this.loadDemandas();
@@ -72,13 +73,12 @@ export class Demandas implements OnInit, OnDestroy {
 
     demandas$.subscribe({
       next: (data) => {
-        this.demandas = data || []; // Garante que 'demandas' seja sempre um array
+        this.demandas = data || []; 
         this.filtrarDemandas();
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        // Apenas mostra o erro se não for um erro de "token inválido" ao deslogar
         if (err.status !== 401 && err.error?.message !== 'Token inválido') {
           this.toastr.error(
             'Erro ao carregar as demandas. Tente novamente mais tarde.',

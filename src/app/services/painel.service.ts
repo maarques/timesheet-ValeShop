@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,21 @@ export class PainelService {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  // Lazy load AuthService to break circular dependency
+  private _authService: AuthService | undefined;
+  private get authService(): AuthService {
+    if (!this._authService) {
+      this._authService = this.injector.get(AuthService);
+    }
+    return this._authService;
+  }
+
+  constructor(private http: HttpClient, private injector: Injector) { }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
 
   // USER ROUTES
   registerUser(userData: any): Observable<any> {
@@ -38,69 +53,71 @@ export class PainelService {
   }
 
   getAuthenticatedUserProfile(): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/users/profile`, { headers });
   }
   
   getAllUsers(): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/users/all`, { headers });
   }
 
 
   // DEMAND ROUTES
   registerDemand(demandData: any): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.post(`${this.apiUrl}/demands`, demandData, { headers });
   }
 
   updateDemand(demandId: number, demandData: any): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.patch(`${this.apiUrl}/demands/update/${demandId}`, demandData, { headers });
   }
 
   registerProblemObservationOrComment(demandId: number, data: any): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.patch(`${this.apiUrl}/demands/register/${demandId}`, data, { headers });
   }
 
   updateProblemObservationOrComment(demandId: number, index: number, data: any): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.patch(`${this.apiUrl}/demands/${demandId}/${index}`, data, { headers });
   }
 
   getAllDemandRecord(): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/demands/all`, { headers });
   }
 
   getUserAllDemandRecord(): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/demands`, { headers });
   }
 
   getDemandById(demandId: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/demands/${demandId}`, { headers });
   }
 
   deleteProblem(demandId: number, index: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.delete(`${this.apiUrl}/demands/problem/${demandId}/${index}`, { headers });
   }
 
   deleteObservation(demandId: number, index: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.delete(`${this.apiUrl}/demands/observation/${demandId}/${index}`, { headers });
   }
 
   deleteComment(demandId: number, index: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.delete(`${this.apiUrl}/demands/comment/${demandId}/${index}`, { headers });
   }
 
   deleteDemand(demandId: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
+    const headers = this.getAuthHeaders();
     return this.http.delete(`${this.apiUrl}/demands/${demandId}`, { headers });
   }
 }
+
+  

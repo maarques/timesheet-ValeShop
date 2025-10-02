@@ -1,16 +1,17 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContainerModule } from '../../components/container/container.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PainelService } from '../../services/painel.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../services/auth.service';
+import { ReplacePipe } from '../../util/replace.pipe';
 
 @Component({
   selector: 'app-ver-mais',
   standalone: true,
-  imports: [CommonModule, FormsModule, ContainerModule, DatePipe],
+  imports: [CommonModule, FormsModule, ContainerModule, DatePipe, TitleCasePipe, ReplacePipe],
   templateUrl: './ver-mais.html',
   styleUrl: './ver-mais.scss',
 })
@@ -18,6 +19,8 @@ export class VerMais implements OnInit {
   demanda: any = null;
   isLoading = true;
   isAdmin = false;
+  allUsers: any[] = [];
+  selectedOwnerId: number | null = null;
 
   abrirProblema = false;
   abrirObs = false;
@@ -40,14 +43,33 @@ export class VerMais implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.authService.isAdmin$.subscribe((isAdmin) => (this.isAdmin = isAdmin));
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadDemanda(Number(id));
-    } else {
+    if (!id) {
       this.toastr.error('ID da demanda não encontrado.', 'Erro');
       this.router.navigate(['/demandas']);
+      return;
     }
+
+    this.authService.isAdmin$.subscribe((isAdmin) => {
+      this.isAdmin = isAdmin;
+      if (this.isAdmin) {
+        this.loadAllUsers();
+      }
+    });
+
+    this.loadDemanda(Number(id));
+  }
+
+  loadAllUsers(): void {
+    this.painelService.getAllUsers().subscribe({
+      next: (users) => {
+        console.log('Usuários carregados:', users);
+        this.allUsers = users.filter((user: { userType: string; }) => user.userType !== 'Administrador');
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao carregar a lista de usuários.', 'Erro');
+      }
+    });
   }
 
   loadDemanda(id: number): void {
@@ -55,7 +77,9 @@ export class VerMais implements OnInit {
     this.painelService.getDemandById(id).subscribe({
       next: (data) => {
         this.demanda = data;
-        // Garante que os arrays existam, mesmo que nulos na resposta da API
+        if (this.demanda.userId) {
+          this.selectedOwnerId = this.demanda.userId;
+        }
         this.demanda.problems = this.demanda.problems || [];
         this.demanda.observations = this.demanda.observations || [];
         this.demanda.comments = this.demanda.comments || [];
@@ -68,6 +92,45 @@ export class VerMais implements OnInit {
         this.router.navigate(['/demandas']);
         this.cdr.detectChanges();
       },
+    });
+  }
+
+  atualizarPrioridade(): void {
+    if (!this.demanda) return;
+    const payload = { priority: this.demanda.priority };
+    this.painelService.updateDemand(this.demanda.id, payload).subscribe({
+      next: () => {
+        this.toastr.success('Prioridade atualizada com sucesso!', 'Sucesso!');
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao atualizar a prioridade.', 'Erro');
+        this.loadDemanda(this.demanda.id); // Recarrega para reverter a mudança visual
+      },
+    });
+  }
+
+  atualizarDono(): void {
+    if (!this.selectedOwnerId || !this.demanda) {
+      this.toastr.warning('Por favor, selecione um novo responsável.', 'Atenção');
+      return;
+    }
+  
+    const payload = { userId: this.selectedOwnerId };
+  
+    this.painelService.updateDemand(this.demanda.id, payload).subscribe({
+      next: () => {
+        this.toastr.success('Dono da demanda atualizado com sucesso!', 'Sucesso!');
+        const newOwner = this.allUsers.find(user => user.id === this.selectedOwnerId);
+        if (newOwner) {
+            this.demanda.owner = newOwner.email.split('@')[0];
+            this.demanda.userId = newOwner.id;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.toastr.error('Erro ao atualizar o dono da demanda.', 'Erro');
+        console.error('Erro ao atualizar dono:', err);
+      }
     });
   }
 
@@ -157,7 +220,9 @@ export class VerMais implements OnInit {
     }
 
     const { tipo, index } = this.itemEmEdicao;
-    const data = { [tipo]: this.valorEmEdicao };
+    const data = { [tipo + 's']: [this.valorEmEdicao] };
+    
+    console.log('Atualizando item:', { demandId: this.demanda.id, index, tipo, data });
 
     this.painelService
       .updateProblemObservationOrComment(this.demanda.id, index, data)
@@ -174,6 +239,7 @@ export class VerMais implements OnInit {
         error: (err) => {
           const tipoTraduzido = this.traduzirTipo(tipo);
           this.toastr.error(`Erro ao atualizar ${tipoTraduzido.toLowerCase()}.`, 'Erro');
+          console.error(`Erro ao atualizar ${tipo}:`, err);
           this.cancelarEdicao();
         },
       });
@@ -181,8 +247,11 @@ export class VerMais implements OnInit {
 
   excluirItem(tipo: 'problem' | 'observation' | 'comment', index: number): void {
     if (this.demanda === null) return;
+    
+    console.log('Tentando excluir item:', { demandId: this.demanda.id, index, tipo });
 
     let deleteObservable;
+
     switch (tipo) {
       case 'problem':
         deleteObservable = this.painelService.deleteProblem(
@@ -211,11 +280,12 @@ export class VerMais implements OnInit {
           `${tipoTraduzido} excluído com sucesso!`,
           'Sucesso'
         );
-        this.loadDemanda(this.demanda.id); // Recarrega para obter o estado mais recente
+        this.loadDemanda(this.demanda.id);
       },
       error: (err) => {
         const tipoTraduzido = this.traduzirTipo(tipo);
         this.toastr.error(`Erro ao excluir ${tipoTraduzido.toLowerCase()}.`, 'Erro');
+        console.error(`Erro ao excluir ${tipo}:`, err);
       },
     });
   }
@@ -242,7 +312,6 @@ export class VerMais implements OnInit {
 
   editarDemanda(): void {
     if (this.demanda && this.demanda.id) {
-      console.log('Navegando para editar demanda com ID:', this.demanda.id);
       this.router.navigate(['/editar-demanda', this.demanda.id]);
     }
   }

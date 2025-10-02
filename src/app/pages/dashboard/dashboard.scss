@@ -197,6 +197,43 @@
   &.status-concluída { background-color: #28a745; }
 }
 
+// Estilos de Paginação
+.paginacao-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  gap: 0.5rem;
+}
+
+.paginacao-container button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #00569e;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  font-weight: bold;
+}
+
+.paginacao-container button:hover:not(:disabled) {
+  background-color: #00569e;
+  color: #fff;
+}
+
+.paginacao-container button.active {
+  background-color: #00569e;
+  color: #fff;
+}
+
+.paginacao-container button:disabled {
+  background-color: #f0f0f0;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+
 // Responsividade
 @media (max-width: 992px) {
   .graficos-container {

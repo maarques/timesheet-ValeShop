@@ -12,13 +12,25 @@
     <div class="filtro-item">
       <select [(ngModel)]="filtros.prioridade">
         <option value="todas">Todas Prioridades</option>
-        <option value="1">Alta (1)</option>
-        <option value="2">Média (2)</option>
-        <option value="3">Baixa (3)</option>
+        <option value="1">1ª</option>
+        <option value="2">2ª</option>
+        <option value="3">3ª</option>
+        <option value="4">4ª</option>
+        <option value="5">5ª</option>
+        <option value="6">6ª</option>
+        <option value="7">7ª</option>
+        <option value="8">8ª</option>
+        <option value="9">9ª</option>
+        <option value="10">10ª</option>
       </select>
     </div>
     <div class="filtro-item">
-      <input type="date" [(ngModel)]="filtros.periodo" />
+      <label for="dataInicio">De:</label>
+      <input type="date" id="dataInicio" [(ngModel)]="filtros.dataInicio" />
+    </div>
+    <div class="filtro-item">
+      <label for="dataFim">Até:</label>
+      <input type="date" id="dataFim" [(ngModel)]="filtros.dataFim" />
     </div>
     <button class="btn btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
     <button class="btn btn-limpar" (click)="limparFiltros()">Limpar Filtro</button>
@@ -83,7 +95,7 @@
         </tr>
       </thead>
       <tbody>
-        @for(demanda of demandasFiltradas; track demanda.id) {
+        @for(demanda of demandasPaginadas; track demanda.id) {
           <tr>
             <td>{{ getNomeAbreviado(demanda.owner) }}</td>
             <td>{{ demanda.title }}</td>
@@ -102,6 +114,16 @@
         }
       </tbody>
     </table>
+    <!-- Controles de Paginação -->
+    @if (demandasFiltradas.length > itensPorPagina) {
+      <div class="paginacao-container">
+        <button (click)="paginaAnterior()" [disabled]="paginaAtual === 1">Anterior</button>
+        @for(pagina of getPaginas(); track pagina) {
+          <button (click)="irParaPagina(pagina)" [class.active]="pagina === paginaAtual">{{ pagina }}</button>
+        }
+        <button (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas()">Próxima</button>
+      </div>
+    }
   </div>
 </div>
 

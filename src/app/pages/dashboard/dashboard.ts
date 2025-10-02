@@ -45,6 +45,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   demandas: Demanda[] = [];
   usuarios: User[] = [];
   demandasFiltradas: Demanda[] = [];
+  demandasPaginadas: Demanda[] = [];
 
   // Estatísticas do dashboard
   totalDemandasAtivas = 0;
@@ -61,8 +62,13 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   filtros = {
     funcionarioId: 'todos',
     prioridade: 'todas',
-    periodo: ''
+    dataInicio: '',
+    dataFim: ''
   };
+
+  // Controle de paginação
+  paginaAtual = 1;
+  itensPorPagina = 5;
 
   constructor(
     private painelService: PainelService,
@@ -121,17 +127,25 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Filtro por período (data)
-    if (this.filtros.periodo) {
-        const dataFiltro = new Date(this.filtros.periodo);
-        dataFiltro.setHours(0, 0, 0, 0); // Zera a hora para comparar apenas a data
-        demandasResultantes = demandasResultantes.filter(d => {
-            const dataDemanda = new Date(d.date);
-            dataDemanda.setHours(0, 0, 0, 0);
-            return dataDemanda.getTime() === dataFiltro.getTime();
-        });
+    if (this.filtros.dataInicio || this.filtros.dataFim) {
+      const dataInicio = this.filtros.dataInicio ? new Date(this.filtros.dataInicio) : null;
+      const dataFim = this.filtros.dataFim ? new Date(this.filtros.dataFim) : null;
+
+      if(dataInicio) dataInicio.setHours(0, 0, 0, 0);
+      if(dataFim) dataFim.setHours(23, 59, 59, 999); // Final do dia
+
+      demandasResultantes = demandasResultantes.filter(d => {
+        const dataDemanda = new Date(d.date);
+        
+        const afterStart = dataInicio ? dataDemanda >= dataInicio : true;
+        const beforeEnd = dataFim ? dataDemanda <= dataFim : true;
+        
+        return afterStart && beforeEnd;
+      });
     }
 
     this.demandasFiltradas = demandasResultantes;
+    this.paginaAtual = 1; // Reseta para a primeira página ao filtrar
     this.atualizarDashboard();
   }
   
@@ -139,7 +153,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.filtros = {
       funcionarioId: 'todos',
       prioridade: 'todas',
-      periodo: ''
+      dataInicio: '',
+      dataFim: ''
     };
     this.aplicarFiltros();
   }
@@ -148,6 +163,40 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.calcularEstatisticas();
     this.gerarResumoTexto();
     this.atualizarGraficos();
+    this.atualizarPaginacao();
+  }
+
+  // Métodos de Paginação
+  atualizarPaginacao(): void {
+    const indiceInicial = (this.paginaAtual - 1) * this.itensPorPagina;
+    const indiceFinal = indiceInicial + this.itensPorPagina;
+    this.demandasPaginadas = this.demandasFiltradas.slice(indiceInicial, indiceFinal);
+    this.cdr.detectChanges();
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginas()) {
+      this.paginaAtual = pagina;
+      this.atualizarPaginacao();
+    }
+  }
+
+  proximaPagina(): void {
+    this.irParaPagina(this.paginaAtual + 1);
+  }
+
+  paginaAnterior(): void {
+    this.irParaPagina(this.paginaAtual - 1);
+  }
+
+  totalPaginas(): number {
+    return Math.ceil(this.demandasFiltradas.length / this.itensPorPagina);
+  }
+
+  getPaginas(): number[] {
+    const total = this.totalPaginas();
+    if (total <= 1) return [];
+    return Array.from({ length: total }, (_, i) => i + 1);
   }
 
   private calcularEstatisticas(): void {

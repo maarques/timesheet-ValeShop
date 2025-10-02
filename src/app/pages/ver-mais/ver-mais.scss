@@ -37,6 +37,9 @@ app-container {
       margin: 0;
       color: #333;
       font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
 
       b {
         color: #000;
@@ -48,6 +51,33 @@ app-container {
       text-decoration: none;
       &:hover {
         text-decoration: underline;
+      }
+    }
+    
+    .owner-edit-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  
+    .owner-select {
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #f8f9fa;
+    }
+  
+    .btn-salvar-dono {
+      background-color: #28a745;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      &:hover {
+        background-color: #218838;
       }
     }
   }
@@ -218,3 +248,4 @@ app-container {
   text-align: center;
   font-family: Arial, sans-serif;
 }
+
