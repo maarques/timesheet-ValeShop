@@ -65,6 +65,7 @@ export class VerMais implements OnInit {
       next: (users) => {
         console.log('Usuários carregados:', users);
         this.allUsers = users.filter((user: { userType: string; }) => user.userType !== 'Administrador');
+        this.trySetSelectedOwner(); // Tenta definir o dono após os usuários carregarem
       },
       error: (err) => {
         this.toastr.error('Erro ao carregar a lista de usuários.', 'Erro');
@@ -77,9 +78,7 @@ export class VerMais implements OnInit {
     this.painelService.getDemandById(id).subscribe({
       next: (data) => {
         this.demanda = data;
-        if (this.demanda.userId) {
-          this.selectedOwnerId = this.demanda.userId;
-        }
+        this.trySetSelectedOwner(); // Tenta definir o dono após a demanda carregar
         this.demanda.problems = this.demanda.problems || [];
         this.demanda.observations = this.demanda.observations || [];
         this.demanda.comments = this.demanda.comments || [];
@@ -93,6 +92,17 @@ export class VerMais implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private trySetSelectedOwner(): void {
+    // Este método só vai funcionar quando tanto a demanda quanto a lista de usuários estiverem carregadas
+    if (this.isAdmin && this.demanda && this.demanda.owner && this.allUsers && this.allUsers.length > 0) {
+      const ownerUser = this.allUsers.find(user => user.email.split('@')[0].toLowerCase() === this.demanda.owner.toLowerCase());
+      if (ownerUser) {
+        this.selectedOwnerId = ownerUser.id;
+        this.cdr.detectChanges();
+      }
+    }
   }
 
   atualizarPrioridade(): void {
@@ -123,7 +133,6 @@ export class VerMais implements OnInit {
         const newOwner = this.allUsers.find(user => user.id === this.selectedOwnerId);
         if (newOwner) {
             this.demanda.owner = newOwner.email.split('@')[0];
-            this.demanda.userId = newOwner.id;
         }
         this.cdr.detectChanges();
       },

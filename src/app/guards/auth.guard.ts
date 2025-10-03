@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { map, take } from 'rxjs';
+import { map, take, filter } from 'rxjs';
 
 export const authGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -15,22 +15,28 @@ export const authGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (!authService.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
-  }
+  return authService.user$.pipe(
+    filter(user => user !== undefined), // Espera até que o estado de autenticação seja resolvido
+    take(1),
+    map(user => {
+      if (!user) {
+        router.navigate(['/login']);
+        return false;
+      }
 
-  const user = authService.getCurrentUser();
-  const allowedRoles = route.data['roles'] as Array<string>;
+      const allowedRoles = route.data['roles'] as Array<string>;
+      if (!allowedRoles || allowedRoles.length === 0) {
+        return true;
+      }
 
-  if (!allowedRoles || allowedRoles.length === 0) {
-    return true;
-  }
-
-  if (user && allowedRoles.includes(user.userType)) {
-    return true;
-  } else {
-    authService.logout();
-    return false;
-  }
+      if (allowedRoles.includes(user.userType)) {
+        return true;
+      } else {
+        const targetRoute = user.userType?.toLowerCase() === 'administrador' ? '/dashboard' : '/demandas';
+        router.navigate([targetRoute]);
+        return false;
+      }
+    })
+  );
 };
+

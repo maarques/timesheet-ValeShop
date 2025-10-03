@@ -10,7 +10,7 @@ import { PainelService } from './painel.service';
 })
 export class AuthService {
   private platformId = inject(PLATFORM_ID);
-  private userSubject = new BehaviorSubject<any>(null);
+  private userSubject = new BehaviorSubject<any | null | undefined>(undefined);
 
   user$ = this.userSubject.asObservable();
   isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user));
@@ -36,6 +36,7 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     if (!isPlatformBrowser(this.platformId)) {
+      this.userSubject.next(null);
       return;
     }
     
@@ -49,6 +50,8 @@ export class AuthService {
 
     if (user && token) {
       this.userSubject.next(JSON.parse(user));
+    } else {
+      this.userSubject.next(null);
     }
   }
 
