@@ -16,7 +16,7 @@ export const authGuard: CanActivateFn = (
   const router = inject(Router);
 
   return authService.user$.pipe(
-    filter(user => user !== undefined), // Espera até que o estado de autenticação seja resolvido
+    filter(user => user !== undefined),
     take(1),
     map(user => {
       if (!user) {
@@ -26,11 +26,11 @@ export const authGuard: CanActivateFn = (
 
       const allowedRoles = route.data['roles'] as Array<string>;
       if (!allowedRoles || allowedRoles.length === 0) {
-        return true;
+        return true; 
       }
 
       if (allowedRoles.includes(user.userType)) {
-        return true;
+        return true; 
       } else {
         const targetRoute = user.userType?.toLowerCase() === 'administrador' ? '/dashboard' : '/demandas';
         router.navigate([targetRoute]);

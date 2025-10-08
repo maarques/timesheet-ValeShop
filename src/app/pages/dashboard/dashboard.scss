@@ -90,10 +90,21 @@
 }
 
 .card-valor {
-  font-size: 3rem;
+  font-size: 2.5rem; // Reduzido para caber 'dias'
   font-weight: bold;
   color: #333;
   text-align: right;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.card-unidade {
+  font-size: 1rem;
+  font-weight: normal;
+  color: #666;
+  padding-bottom: 0.5rem;
 }
 
 .card-funcionario {
@@ -155,6 +166,13 @@
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.tabela-titulo {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.2rem;
+  color: #333;
 }
 
 .tabela-demandas {
