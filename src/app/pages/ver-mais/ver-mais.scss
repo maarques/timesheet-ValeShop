@@ -40,6 +40,7 @@ app-container {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap; // Permite que o conteúdo quebre a linha se necessário
 
       b {
         color: #000;
@@ -49,6 +50,7 @@ app-container {
     a {
       color: #00569e;
       text-decoration: none;
+      word-break: break-all; // Quebra links longos
       &:hover {
         text-decoration: underline;
       }
@@ -65,6 +67,11 @@ app-container {
       border-radius: 6px;
       border: 1px solid #ccc;
       background-color: #f8f9fa;
+    }
+
+    .priority-select {
+      max-height: 150px;
+      overflow-y: auto;
     }
   
     .btn-salvar-dono {
@@ -109,7 +116,7 @@ app-container {
 
 .btn-acao,
 .btn-voltar {
-  background: linear-gradient(135deg, #004075, #00569e);
+  background: linear-gradient(135deg, #004075, #00569E);
   color: #fff;
   padding: 0.6rem 1.2rem;
   border-radius: 20px;
@@ -247,5 +254,36 @@ app-container {
   padding: 1rem;
   text-align: center;
   font-family: Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .detalhes-demanda {
+    .header-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .secao {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .item-actions {
+      margin-left: 0;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
 }
 

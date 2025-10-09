@@ -76,7 +76,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #004075, #00569e);
+  background: linear-gradient(135deg, #004075, #00569E);
   color: #fff;
 }
 
@@ -166,4 +166,27 @@
   &.status-autorizada-para-produção { background-color: #ffc107; color: #333}
   &.status-liberada-para-teste { background-color: #17a2b8; }
   &.status-concluída { background-color: #28a745; }
+}
+
+@media (max-width: 768px) {
+  .search-bar {
+    width: 90%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  .demanda-info {
+    gap: 10px;
+    font-size: 12px;
+  }
+  
+  .loading-container,
+  .empty-state-container {
+    margin: 1rem;
+  }
 }
