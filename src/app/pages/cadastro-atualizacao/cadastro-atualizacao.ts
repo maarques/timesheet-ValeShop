@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,7 +35,8 @@ export class CadastroAtualizacao implements OnInit {
     private painelService: PainelService,
     private router: Router,
     private route: ActivatedRoute,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -57,6 +58,7 @@ export class CadastroAtualizacao implements OnInit {
           data.date = new Date(data.date).toISOString().split('T')[0];
         }
         this.demanda = data;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.toastr.error('Erro ao carregar a demanda para edição.', 'Erro');
