@@ -1,0 +1,62 @@
+<app-container>
+  <div class="cadastroDemanda-form">
+    <h2><b>{{ pageTitle }}</b></h2>
+    <p class="descricao">{{ pageDescription }}</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Linha 1 -->
+      <label>Título da demanda</label>
+      <input type="text" placeholder="Digite o título da demanda" [(ngModel)]="demanda.title" name="title" required>
+
+      <!-- Linha 2 -->
+      <div class="linha">
+        <div class="campo">
+          <label>Prioridade</label>
+          <select [(ngModel)]="demanda.priority" name="priority" required>
+            <option value="" disabled>Selecione</option>
+            <option value="1">1ª (Mais alta)</option>
+            <option value="2">2ª</option>
+            <option value="3">3ª</option>
+            <option value="4">4ª</option>
+            <option value="5">5ª</option>
+            <option value="6">6ª</option>
+            <option value="7">7ª</option>
+            <option value="8">8ª</option>
+            <option value="9">9ª</option>
+            <option value="10">10ª (Mais baixa)</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label>Status</label>
+          <select [(ngModel)]="demanda.status" name="status" required>
+            <option value="" disabled>Selecione</option>
+            <option value="Iniciada">Iniciada</option>
+            <option value="Autorizada para Produção">Autorizada para Produção</option>
+            <option value="Liberada para Teste">Liberada para Teste</option>
+            <option value="Concluída">Concluída</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Link do GitLab</label>
+          <input type="text" placeholder="Cole o link do GitLab" [(ngModel)]="demanda.gitLink" name="gitLink">
+        </div>
+
+        <div class="campo">
+          <label>Prazo</label>
+          <input type="date" [(ngModel)]="demanda.date" name="date" required>
+        </div>
+      </div>
+
+      <label>Descrição detalhada</label>
+      <textarea placeholder="Descreva a demanda" [(ngModel)]="demanda.description" name="description"
+        required></textarea>
+
+      <!-- Botão -->
+      <button type="submit">{{ isEditMode ? 'ATUALIZAR DEMANDA' : 'ENVIAR DEMANDA' }}</button>
+    </form>
+  </div>
+</app-container>

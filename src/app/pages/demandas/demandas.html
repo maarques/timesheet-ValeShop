@@ -1,0 +1,76 @@
+<div class="search-bar">
+  <label for="search">Suas Demandas:</label>
+  <input 
+    type="text" 
+    placeholder="Pesquisar por título, responsável ou status" 
+    [(ngModel)]="termoBusca" 
+    (input)="filtrarDemandas()" 
+  />
+</div>
+
+<!-- Usando a nova sintaxe de control flow -->
+@if (isLoading) {
+<div class="loading-container">
+  <p>Carregando suas demandas...</p>
+</div>
+} @else { @if (demandas.length === 0) {
+<div class="empty-state-container">
+  <h2>Nenhuma demanda encontrada</h2>
+  <p>Você ainda não possui demandas cadastradas.</p>
+  <a routerLink="/cadastro-demanda" class="btn btn-primary create-demand-btn">Criar Nova Demanda</a>
+</div>
+} @else {
+@for (demanda of demandasPaginadas; track demanda.id) {
+<app-container>
+  <div class="demanda-card">
+    <h2>
+      <b>{{ demanda.title }}</b>
+    </h2>
+    <div class="demanda-info">
+      <span>Prioridade: <b>{{ demanda.priority }}</b></span>
+      <span>Status: <span class="status-badge status-{{demanda.status | lowercase | replace: ' ': '-'}}">{{ demanda.status }}</span></span>
+      <span>Criada em: <b>{{ demanda.createdAt | date : 'dd/MM/yyyy' }}</b></span>
+      <span>Prazo: <b>{{ demanda.date | date : 'dd/MM/yyyy' }}</b></span>
+      <span>Responsável: <b>{{ demanda.owner | titlecase }}</b></span>
+      <span>Gitlab Link: <a href="{{ demanda.gitLink }}" target="_blank"> Acessar </a></span>
+    </div>
+    <p class="demanda-desc">
+      {{ demanda.description }}
+    </p>
+    <div class="demanda-actions">
+      <button class="btn btn-primary" (click)="verMais(demanda.id)">
+        VER MAIS
+      </button>
+      <button class="btn btn-danger" (click)="solicitarExclusao(demanda.id)">
+        EXCLUIR
+      </button>
+    </div>
+  </div>
+</app-container>
+} 
+
+<!-- Controles de Paginação -->
+@if (demandasFiltradas.length > itensPorPagina) {
+  <div class="paginacao-container">
+    <button (click)="paginaAnterior()" [disabled]="paginaAtual === 1">Anterior</button>
+    @for(pagina of getPaginas(); track pagina) {
+      <button (click)="irParaPagina(pagina)" [class.active]="pagina === paginaAtual">{{ pagina }}</button>
+    }
+    <button (click)="proximaPagina()" [disabled]="paginaAtual === totalPaginas()">Próxima</button>
+  </div>
+}
+
+
+@if(demandasPaginadas.length === 0 && demandas.length > 0) {
+  <div class="empty-state-container">
+    <h2>Nenhum resultado encontrado</h2>
+    <p>Nenhuma demanda corresponde à sua busca.</p>
+  </div>
+}
+} }
+@if (isModalOpen) {
+<app-confirmation-modal title="Confirmar Exclusão"
+  message="Você tem certeza que deseja excluir esta demanda? Esta ação não pode ser desfeita."
+  (confirm)="confirmarExclusao()" (cancel)="fecharModal()">
+</app-confirmation-modal>
+}

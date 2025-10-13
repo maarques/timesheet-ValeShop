@@ -1,0 +1,83 @@
+.cadastroDemanda-form {
+  max-width: 900px;
+  margin: 0 auto; /* centraliza dentro do app-container */
+}
+
+.cadastroDemanda-form h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #000;
+  font-family: Arial, sans-serif;
+}
+
+.cadastroDemanda-form .descricao {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.cadastroDemanda-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastroDemanda-form label {
+  margin-top: 1rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #000000;
+  font-family: Arial, sans-serif;
+}
+
+.cadastroDemanda-form input,
+.cadastroDemanda-form select,
+.cadastroDemanda-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  background: #E5E5E5;
+  box-sizing: border-box; /* Garante que padding não afete a largura final */
+}
+
+.cadastroDemanda-form textarea {
+  min-height: 120px;
+  resize: none;
+  border-radius: 15px;
+}
+
+.cadastroDemanda-form .linha {
+  display: grid; /* Alterado para grid para melhor alinhamento */
+  grid-template-columns: 1fr 1fr; /* Cria duas colunas de largura igual */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cadastroDemanda-form .campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastroDemanda-form button {
+  margin-top: 2rem;
+  padding: 0.7rem;
+  background: linear-gradient(135deg, #004075, #00569E);
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .cadastroDemanda-form .linha {
+    grid-template-columns: 1fr; // Empilha as colunas
+    gap: 0; // Remove o espaçamento quando empilhado
+  }
+}
+
