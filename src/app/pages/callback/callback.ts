@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth-callback',
@@ -12,28 +12,37 @@ import { ActivatedRoute } from '@angular/router';
 export class Callback implements OnInit {
 
   errorMessage: string | null = null;
+  statusMessage: string = 'Autenticando, por favor aguarde...';
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router, // Injetar Router para possível navegação em erro
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit(): void {
-    this.route.fragment.subscribe({
-      next: (fragment) => {
-        if (!fragment) {
-          this.processQueryParams();
-        } else {
-          this.processParams(new URLSearchParams(fragment));
+    if (isPlatformBrowser(this.platformId)) {
+      this.route.fragment.subscribe({
+        next: (fragment) => {
+          if (fragment) {
+            this.processParams(new URLSearchParams(fragment));
+          } else {
+            this.processQueryParams();
+          }
+        },
+        error: (err) => {
+          this.handleError("Erro ao ler parâmetros da URL: " + (err.message || 'Erro desconhecido'));
         }
-      },
-      error: (err) => {
-        this.handleError("Erro ao ler o fragmento da URL: " + err.message);
-      }
-    });
+      });
+    } else {
+      this.handleError("Callback não suportado fora do ambiente do navegador.");
+    }
   }
 
   private processQueryParams(): void {
     const params = new URLSearchParams(window.location.search);
-    if (!params.has('token') && !params.has('userType') && !params.has('error')) {
-      this.handleError("Dados de autenticação não encontrados na URL (nem no fragmento, nem nos query params).");
+    if (!params.has('token') && !params.has('userType') && !params.has('error') && !params.has('code')) {
+      this.handleError("Dados de autenticação não encontrados na URL.");
       return;
     }
     this.processParams(params);
@@ -42,30 +51,34 @@ export class Callback implements OnInit {
   private processParams(params: URLSearchParams): void {
     try {
       if (params.has('error')) {
-        const errorMessage = params.get('error_description') || params.get('error') || 'Erro desconhecido do provedor.';
-        this.handleError(errorMessage);
+        const errorDescription = params.get('error_description') || params.get('error') || 'Erro desconhecido do provedor de autenticação.';
+        this.handleError(`Falha na autenticação: ${errorDescription}`);
         return;
       }
 
-      if (params.has('token') || params.has('userType')) {
-        
+      const token = params.get('token');
+      const userType = params.get('userType');
+      const name = params.get('name'); 
+      const email = params.get('email'); 
+
+      if (token && userType) {
         const loginData = {
           success: true,
-          token: params.get('token'),
+          token: token,
           userResponseDTO: {
-            userType: params.get('userType'),
-            name: params.get('name'),
-            email: params.get('email')
+            userType: userType,
+            name: name,
+            email: email
           }
         };
 
-        const targetOrigin = '*'; 
-        
-        if (window.opener) {
-          window.opener.postMessage(loginData, targetOrigin);
-          window.close(); 
+        const targetOrigin = window.location.origin; 
+
+        if (window.opener && !window.opener.closed) {
+           window.opener.postMessage(loginData, targetOrigin);
+           // window.close(); // Pode ser descomentado se preferir fechar aqui
         } else {
-          throw new Error("A janela 'opener' (principal) não foi encontrada.");
+          throw new Error("A janela principal (opener) não foi encontrada ou está fechada. Não foi possível completar o login.");
         }
 
       } else {
@@ -73,24 +86,42 @@ export class Callback implements OnInit {
       }
 
     } catch (e: any) {
-      this.handleError(e.message || 'Erro desconhecido ao processar o callback.');
+      this.handleError(e.message || 'Erro desconhecido ao processar o callback de autenticação.');
     }
   }
 
   private handleError(message: string): void {
     this.errorMessage = message;
+    this.statusMessage = 'Falha na Autenticação';
     console.error('Erro no callback de autenticação:', message);
-    
+
     try {
-      const targetOrigin = '*'; 
-      if (window.opener) {
-        window.opener.postMessage({
-          success: false,
-          message: message
-        }, targetOrigin);
-      }
+        const targetOrigin = window.location.origin;
+        if (window.opener && !window.opener.closed) {
+            window.opener.postMessage({
+            success: false,
+            message: message
+            }, targetOrigin);
+        }
     } catch (openerError) {
       console.error("Não foi possível enviar mensagem de erro para o opener.", openerError);
+    }
+  }
+
+  closeWindow(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.close();
+    }
+  }
+
+  redirectToLogin(): void {
+    if (isPlatformBrowser(this.platformId)) {
+       if (window.opener && !window.opener.closed) {
+          window.opener.location.href = '/login'; 
+          window.close(); 
+       } else {
+          window.location.href = '/login';
+       }
     }
   }
 }

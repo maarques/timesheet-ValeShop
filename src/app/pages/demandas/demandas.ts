@@ -164,6 +164,7 @@ export class Demandas implements OnInit, OnDestroy {
   }
 
   verMais(demandaId: number): void {
+    console.log('Navegando para ver mais detalhes da demanda:', demandaId);
     this.router.navigate(['/ver-mais', demandaId]);
   }
 }

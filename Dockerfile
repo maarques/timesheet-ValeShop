@@ -26,3 +26,15 @@ ENV PORT=4000
 
 # Comando para iniciar o servidor SSR
 CMD ["node", "dist/timesheet-valeshop/server/server.mjs"]
+
+
+#FROM nginx:stable-alpine as production-stage
+
+#COPY default_nginx.conf /etc/nginx/conf.d/default.conf
+#COPY nginx.conf /etc/nginx/nginx.conf
+
+
+#COPY --from=build /app/dist /etc/nginx/html
+#EXPOSE 80
+
+#CMD ["nginx", "-g", "daemon off;"]

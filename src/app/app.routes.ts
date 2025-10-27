@@ -56,6 +56,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['Administrador', 'Normal'] }
   },
+   {
+    path: 'ver-mais/:id',
+    loadComponent: () => VerMais,
+    canActivate: [authGuard],
+    data: { roles: ['Administrador', 'Normal'] }
+  },
+  {
+    path: 'editar-demanda/:id',
+    loadComponent: () => CadastroAtualizacao,
+    canActivate: [authGuard],
+    data: { roles: ['Normal'] }
+  },
   {
     path: 'cadastro-demanda',
     loadComponent: () => CadastroAtualizacao,
